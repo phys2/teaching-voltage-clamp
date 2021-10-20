@@ -1,0 +1,725 @@
+<!-- Copyright (C) 2021 Pierre Kreins  
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <title>Spannungsklemme von Oozyten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css?v=131021">
+
+    <script src="amd_core-1.0.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+    <script src="scripts.js?v=141021"></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" href="favicon.svg">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#004a99">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="favicon.svg"
+                        alt="" height="24" class="d-inline-block align-text-top" id="logo">
+                    Praktikum Physiologie
+                </a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Membranpotential: Spannungsklemme von Oozyten</a>
+                        </li>
+                    </ul>
+                </div>
+                <form class="d-flex">
+                    <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasHelp">
+                        <i class="bi-info-circle"></i> Erkl&auml;rungen
+                    </button>
+                </form>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasHelp">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasExampleLabel">Spannungsklemme von Oozyten</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+                <p class="h5">Einleitung</p>
+                <p>
+                    Ziel dieses Programms und des Praktikumsversuch &quot;Membranpotential&quot; ist es, zu verstehen,
+                <ul>
+                    <li>wie ein Membranpotential durch unterschiedliche intra- und extrazellul&auml;re
+                        Ionenkonzentrationen entsteht,</li>
+                    <li>wie selektive Membranleitf&auml;higkeiten dieses Membranpotential beeinflussen,</li>
+                    <li>und welche Ionenstr&ouml;me durch unterschiedliche Membranpotentiale und Leitf&auml;higkeiten
+                        hervorgerufen werden (und wie daraus das Gleichgewichtspotential einer Ionenspezies
+                        experimentell bestimmt werden kann).</li>
+                </ul>
+                Dazu wird ein Versuchsaufbau simuliert, der tats&auml;chlich auch von Elektrophysiologen zur Erforschung
+                von z.&nbsp;B. Ionenkan&auml;len verwendet wird! Grundlage f&uuml;r den Versuch sind genetisch
+                modifizierte Oozyten aus <i>Xenopus laevis</i>, die eine einzelne Art an Ionenkan&auml;len in großer
+                Menge exprimieren. Die Oozyten eignen sich, allein aufgrund ihrer Gr&ouml;ße, sehr gut um direkte
+                Messungen des Membranpotentials durchzuf&uuml;hren. Dazu wird eine, mit einer Salzl&ouml;sung
+                gef&uuml;llte, spitze Glas-Mikroelektrode bis ins Cytosol der Oozyte gestochen. So kann eine zwischen
+                der Membraninnenseite und der Badl&ouml;sung bestehende Potentialdifferenz, sprich das Membranpotential,
+                gemessen werden.
+                </p>
+                 
+                <p class="h5">Ablauf der Versuchssimulation</p>
+                <p>
+                <ul>
+                    <li>Als erstes musst du festlegen, welche Oozyten-Charge, sprich welchen exprimierten Ionenkanal du
+                        untersuchen willst. W&auml;hle den gew&uuml;nschten Kanal im Fenster &quot;Bedienung&quot; aus.
+                    </li>
+                    <li>Die Badl&ouml;sung kann <small>(auch w&auml;hrend des Experiments zu jeder Zeit)</small> im
+                        Fenster &quot;Badl&ouml;sung&quot; ver&auml;ndert werden. Es stehen zwei Eingabezeilen zur
+                        Verf&uuml;gung, um ein schnelles Switchen zwischen den L&ouml;sungen zu erlauben.</li>
+                    <li>Jetzt kannst du die Pipette zun&auml;chst ins Wasserbad f&uuml;hren. Der Messschreiber beginnt
+                        automatisch damit, die Werte des Spannungs- (unten, rot) und Strommesser (oben, schwarz)
+                        aufzunehmen.  </li>
+                    <li><small>Wie du siehst, sorgt bereits der Kontakt der Elektrode mit der Badl&ouml;sung f&uuml;r
+                            eine kleine, messbare Potentialdifferenz. Dieses sogenannte &quot;Junction&quot;-Potential
+                            ist messtechnisch bedingt und f&uuml;r die Messung nicht erw&uuml;nscht. Es kann mit dem
+                            sogenannten &quot;Offset&quot;-Potential (Anzeige &uuml;ber dem Messschreiber) ausgeglichen
+                            werden. Ein Klick auf den Button &quot;Komp.&quot; gen&uuml;gt.</small></li>
+                    <li>Nun kannst du die Elektrode in die Zelle stechen. Beobachte, welches Membranpotential jetzt
+                        angezeigt wird!</li>
+                    <li>Zur eigentlichen Aufzeichnung der Messung kannst du zwischen 3 Modi w&auml;hlen:
+                        <ul>
+                            <li>Der Modus &quot;nur messen&quot; erlaubt dir z.&nbsp;B. aufzuzeichnen, was beim Wechsel
+                                auf  unterschiedliche Badl&ouml;sungen passiert.</li>
+                            <li>Ganz anders funktioniert die Spannungsklemme: Hierbei wird das Membranpotential nicht
+                                mehr gemessen, sondern aktiv durch die Elektrode vorgegeben. Gleichzeitig wird aber
+                                weiterhin der erzeugte Strom &uuml;ber die Membran gemessen. Du kannst das
+                                Membranpotential V<sub>mem</sub>, auf das du die Oozyte klemmen m&ouml;chtest,
+                                w&auml;hlen.</li>
+                        </ul>
+                    </li>
+                </ul>
+                </p>
+                 
+                <p class="h5">IV-Curve</p>
+                <p>
+                    Neben der Spannungsklemme bei einem festen Membranpotential steht auch der Modus
+                    &quot;IV-Curve&quot; zur Wahl.
+                <ul>
+                    <li>Die Zelle wird zun&auml;chst auf V<sub>mem</sub> geklemmt, dann wird das Membranpotential
+                        pulsartig f&uuml;r kurze Zeit erh&ouml;ht. Dies wird treppenf&ouml;rmig wiederholt, jeder Puls
+                        bei einem h&ouml;heren Membranpotential.</li>
+                    <li>Gleichzeitig wird der erzeugte Strom &uuml;ber die Membran weiterhin gemessen.</li>
+                    <li>Die aus der IV-Curve-Messung gewonnen Daten erlauben die Bestimmung einer einfachen
+                        Strom-Spannung-Beziehung. &quot;Lade&quot; dazu, sobald die Messung abgeschlossen ist (60s), die
+                        Daten in das Fenster &quot;Strom-Spannung-Beziehung&quot;. </li>
+                    <li>Das Programm &uuml;bertr&auml;gt jetzt, f&uuml;r jede gemessene Potential-&quot;Stufe&quot;, den
+                        erzeugten Strom (bzw. dessen maximaler Wert) in den Graphen. </li>
+                    <li>Das Programm bietet weiterhin die M&ouml;glichkeit, eine Kurve &uuml;ber diese – gemessenen -
+                        Werte zu fitten. Dies erm&ouml;glicht auch auf die Einzelkanal-Offenwahrscheinlichkeit des
+                        untersuchten Kanals zu schließen. Dazu musst du zun&auml;chst aussuchen, welcher Kurven-Typ
+                        &uuml;ber die Daten gefittet werden soll. W&auml;hle z.&nbsp;B. f&uuml;r die daueroffenen
+                        Kaliumkan&auml;le, eine Gerade aus. Fitte jetzt die Daten.</li>
+                    <li>Im rechten Fenster &quot;Offenwahrscheinlichkeit-Spannung-Beziehung&quot; wird jetzt die
+                        (maximale*!) Offenwahrscheinlichkeit P<sub>0, max</sub> in Abh&auml;ngigkeit des
+                        Membranpotentials dargestellt.</li>
+                </ul>
+                <small>*Tats&auml;chlich ist bei den meisten Ionenkan&auml;len die Einzelkanal-Offenwahrscheinlichkeit
+                    nicht nur vom Membranpotential, sondern auch von der Zeit abh&auml;ngig. Man spricht hier von der
+                    <i>gating</i>-Kinetik. Dies wird hier nicht ber&uuml;cksichtigt, es wird nur der maximale Wert
+                    &uuml;ber die Zeit angezeigt.</small>
+                </p>
+                <p class="h5">Gestaltung und &copy;</p>
+                <p>
+                    Diese Seite wurde gestaltet von Pierre Kreins, Physiologisches Institut Freiburg, Abteilung
+                    Physiologie II,
+                    in Anlehnung an das Skript zum Physiologischen Praktikum der Albert-Ludwigs-Universit&auml;t
+                    Freiburg.
+                </p>
+                <p>
+                    Dieses Programm ist Freie Software: Sie k&ouml;nnen es unter den Bedingungen der GNU General Public
+                    License, wie von der Free Software Foundation, Version 3 der Lizenz oder (nach Ihrer Wahl) jeder
+                    neueren ver&ouml;ffentlichten Version, weiter verteilen und/oder modifizieren.
+                    Der Quellcode ist auf <a href="https://github.com/phys2/teaching-ecg-towel">GitHub</a>
+                    verf&uuml;gbar.
+                </p>
+                <p>
+                    Das Skript ist durch Urheberrechte gesch&uuml;tzt. Eine Vervielf&auml;ltigung ist nicht erlaubt.
+                </p>
+            </div>
+        </div>
+        <div class="container-xxl overflow-hidden py-3">
+            <div class="row">
+                <div class="col-12 col-lg-9">
+                    <div class="row mb-1">
+                        <div class="col-12 col-xl-4  mb-1">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">gemes. Mebranpot.:</span>
+                                <input type="text" class="form-control" readonly id="potentialOutput">
+                                <span class="input-group-text">mV</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 col-xl-4  mb-1">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Offset-Pot.:</span>
+                                <input type="number" class="form-control" value="0" step="0.1"
+                                    id="offsetPotentialInput">
+                                <span class="input-group-text">mV</span>
+                                <button class="btn btn-outline-secondary" type="button" id="compensate">Komp.</button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 col-xl-4  mb-1">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">gemes. Strom:</span>
+                                <input type="text" class="form-control" id="currentOutput" readonly>
+                                <span class="input-group-text">nA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="screen" class="ratio ratio-4x3 mb-3">
+                        <canvas id="mainCanvas"></canvas>
+                    </div>
+                    <div class="row m-0">
+                        <div class="card p-0">
+                            <div class="card-header">
+                                <i class="bi-water"></i> Badl&ouml;sung (umgibt die Zelle):
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <div class="form-check  mb-1 mt-2">
+                                            <input class="form-check-input" type="radio" name="selectedSolution"
+                                                id="selectedSolution1" value="1" checked>
+                                            <label class="form-check-label" for="selectedSolution1">
+                                                Lsg. 1:
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Na1"
+                                                        class="col-auto col-form-label">Na<sup>+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Na1" name="Na1">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="150" selected>150 mM</option>
+                                                            <option value="200">200 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="K1"
+                                                        class="col-auto col-form-label">K<sup>+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="K1" name="K1">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5" selected>5 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Ca1"
+                                                        class="col-auto col-form-label">Ca<sup>2+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Ca1" name="Ca1">
+                                                            <option value="1" selected>1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Cl1"
+                                                        class="col-auto col-form-label">Cl<sup>-</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Cl1" name="Cl1">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="4">4 mM</option>
+                                                            <option value="120" selected>120 mM</option>
+                                                            <option value="200">200 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <div class="form-check  mb-3 mt-2">
+                                            <input class="form-check-input" type="radio" name="selectedSolution"
+                                                id="selectedSolution2" value="2">
+                                            <label class="form-check-label" for="selectedSolution2">
+                                                Lsg. 2:
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Na2"
+                                                        class="col-auto col-form-label">Na<sup>+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Na2" name="Na2">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="150" selected>150 mM</option>
+                                                            <option value="200">200 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="K2"
+                                                        class="col-auto col-form-label">K<sup>+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="K2" name="K2">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="20" selected>20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Ca2"
+                                                        class="col-auto col-form-label">Ca<sup>2+</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Ca2" name="Ca2">
+                                                            <option value="1" selected>1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col p-0">
+                                                <div class="row">
+                                                    <label for="Cl2"
+                                                        class="col-auto col-form-label">Cl<sup>-</sup>:</label>
+                                                    <div class="col-auto">
+                                                        <select class="form-select form-control" id="Cl2" name="Cl2">
+                                                            <option value="1">1 mM</option>
+                                                            <option value="3">3 mM</option>
+                                                            <option value="4">4 mM</option>
+                                                            <option value="120" selected>120 mM</option>
+                                                            <option value="200">200 mM</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <div class="row p-1">
+                        <div class="col-6 col-lg-12 mb-lg-1">
+                            <div class="card p-0">
+                                <div class="card-header">
+                                    <i class="bi-joystick"></i> Bedienung:
+                                </div>
+                                <div class="card-body">
+                                    <button class="btn btn-sm btn-primary  mb-3" id="reboot"><i
+                                            class="bi-arrow-clockwise"></i>
+                                        Neustart</button>
+                                    <div class="form-check  mb-3 ps-0">
+                                        <label for="selectedChannel" class="form-label">exprimierte Kan&auml;le:
+                                        </label>
+                                        <select class="form-select mb-3" id="selectedChannel" name="selectedChannel">
+                                            <option value="1" selected>daueroffen f&uuml;r K&#x207A</option>
+                                            <option value="2">K&#x1D62;&#x1D63;</option>
+                                            <option value="3">K&#x1D65; (ohne Kinetik)</option>
+                                            <option value="4">K&#x1D65; </option>
+                                            <option value="5">Na&#x1D65; (ohne Kinetik)</option>
+                                            <option value="6">Na&#x1D65;</option>
+                                            <option value="7">Ca&#x1D65;</option>
+                                            <option value="8">daueroffen f&uuml;r Cl&#x207B;</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-grid gap-3 mb-3">
+                                        <button class="btn btn-primary" id="waterBathButton">Elektrode ins Wasserbad
+                                            f&uuml;hren</button>
+                                        <button class="btn btn-primary" id="wholeCellButton" disabled>Elektrode in
+                                            Zelle einstechen</button>
+                                    </div>
+                                    <label class="form-label">Mess-Modus: </label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="recordingMode"
+                                            id="recordingMode1" value='1' checked>
+                                        <label class="form-check-label" for="recordingMode1">
+                                            nur messen <span class="badge rounded-pill bg-secondary"
+                                                data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                title="Spannung und Strom werden gemessen">?</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check  mb-3">
+                                        <input class="form-check-input" type="radio" name="recordingMode"
+                                            id="recordingMode2" value='2'>
+                                        <label class="form-check-label" for="recordingMode2">
+                                            Spannungsklemme bei V<sub>mem</sub>
+                                            <span class="badge rounded-pill bg-secondary" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom"
+                                                title="Spannung wird vorgegeben, Strom wird gemessen">?</span>
+                                        </label>
+                                    </div>
+                                    <div class="form-check  mb-3">
+                                        <input class="form-check-input" type="radio" name="recordingMode"
+                                            id="recordingMode3" value='3'>
+                                        <label class="form-check-label" for="recordingMode3">
+                                            Spannungsklemme f&uuml;r &quot;IV-curve&quot; <span
+                                                class="badge rounded-pill bg-secondary" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom"
+                                                title="Spannung wird stufenweise erh&ouml;ht, Strom wird gemessen">?</span>
+                                        </label>
+                                    </div>
+
+                                    <label for="V_mem" class="form-label">V<sub>mem</sub>: <span
+                                            class="badge rounded-pill bg-secondary" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom"
+                                            title="vorgegebenes Membranpotential f&uuml;r Spannungsklemme">?</span></label>
+
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="V_mem" min="-120" max="-20"
+                                            step="5" value="-80">
+                                        <span class="input-group-text">mV</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <a class="text-decoration-none" data-bs-toggle="collapse" href="#expertParams"
+                                            role="button">
+                                            zus&auml;tzliche Einstellungen...
+                                        </a>
+                                    </div>
+                                    <div class="collapse" id="expertParams">
+                                        <label for="v_0Input" class="form-label">V<sub>0</sub>: <span
+                                                class="badge rounded-pill bg-secondary" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom"
+                                                title="Potential der ersten Stufe der IV-Curve">?</span></label>
+
+                                        <div class="input-group mb-3">
+                                            <input type="number" class="form-control" id="v_0Input" min="-150" max="150"
+                                                step="1" value="-90">
+                                            <span class="input-group-text">mV</span>
+                                        </div>
+                                        <label for="deltaVInput" class="form-label">&Delta;<sub>V</sub>: <span
+                                                class="badge rounded-pill bg-secondary" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom"
+                                                title="Potentialdifferenz zw. 2 Stufen der IV-Curve">?</span></label>
+
+                                        <div class="input-group mb-3">
+                                            <input type="number" class="form-control" id="deltaVInput" min="0" max="30"
+                                                step="1" value="15">
+                                            <span class="input-group-text">mV</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Messung aufnehmen: </label>
+                                    </div>
+                                    <div class="d-grid gap-3">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-success" id="startRecording"
+                                                disabled><i class="bi-record-circle"></i> Start</button>
+                                            <button type="button" class="btn btn-outline-danger" id="stopRecording"
+                                                disabled><i class="bi-pause-circle"></i> Stop</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-12">
+                            <div class="card">
+                                <img src="ressources/outside_frame.svg" class="card-img-top" id="simImg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 col-lg-6 mb-2">
+                    <div class="card p-0">
+                        <div class="card-header">
+                            <i class="bi-graph-up"></i> Strom-Spannung-Beziehung (IV-Curve)
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    <button class="btn btn-primary  mb-3" id="importIvData" disabled>Daten aus
+                                        Spannungsklemme laden</button>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="input-group">
+                                        <select class="form-select" id="selectedModel" name="selectedModel">
+                                            <option value="1" selected>Gerade</option>
+                                            <option value="2">Hodgkin-Huxley-Modell</option>
+                                        </select>
+                                        <button class="btn btn-outline-primary" type="button" id="fitCurve"
+                                            disabled>Kurve fitten</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="analysisScreen" class="ratio ratio-4x3 mb-3">
+                                <canvas id="analysisCanvas"></canvas>
+                            </div>
+                            <div>Modell f&uuml;r die Strom-Spannung-Kurve: </div>
+                            <div id="modelDiv">$$I(U) = a \cdot U + b$$</div>
+                            <div id="resultHeader">Gefittete Parameter:</div>
+                            <div id="resultBody"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card p-0">
+                        <div class="card-header">
+                            <i class="bi-graph-up"></i> Offenwahrscheinlichkeit-Spannung-Beziehung
+                        </div>
+                        <div class="card-body">
+                            <div id="conductanceScreen" class="ratio ratio-4x3">
+                                <canvas id="conductanceCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mainModalTitle">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="mainModalBody">Modal body
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="impressumModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Impressum und Datenschutz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Kontakt</h6>
+
+                    Physiologisches Institut<br>
+                    Prof. Dr. Bernd Fakler<br>
+                    Telefon [++49] 0761 / 203 - 5176<br>
+                    Fax [++49] 0761 / 203 - 5191<br>
+                    carmen.herr@physiologie.uni-freiburg.de<br>
+                    Hermann-Herder-Str. 7<br>
+                    79104 Freiburg<br>
+                    Deutschland<br>
+                    <br>
+                    Das Physiologische Institut ist Teil der Albert-Ludwigs-Universit&auml;t Freiburg.<br>
+                    <br>
+                    Albert-Ludwigs-Universit&auml;t Freiburg<br>
+                    Friedrichstraße 39<br>
+                    79098 Freiburg<br>
+                    Telefon: [++49] 0761 / 203 – 0<br>
+                    Fax: [++49] 0761 / 203 – 4369<br>
+                    info@uni-freiburg.de<br>
+                    https://uni-freiburg.de<br>
+                    <br>
+                    <h6>Rechtsform und gesetzliche Vertretung</h6>
+                    Die Universit&auml;t Freiburg ist eine K&ouml;rperschaft des &ouml;ffentlichen Rechts. Sie wird
+                    durch die Rektorin
+                    Prof. Dr. Kerstin Krieglstein gesetzlich vertreten.<br>
+                    <br>
+                    <h6>Zust&auml;ndige Aufsichtsbeh&ouml;rde</h6>
+                    Ministerium f&uuml;r Wissenschaft, Forschung und Kunst Baden-W&uuml;rttemberg
+                    K&ouml;nigstraße 46, 70173 Stuttgart<br>
+                    <br>
+                    <h6>Umsatzsteuer-ID-Nummer</h6>
+                    DE 142116817<br>
+                    <br>
+                    <h6>EORI-Nummer</h6>
+                    DE1112988<br>
+                    <br>
+                    <h6>Haftungsausschluss bei eigenen Inhalten</h6>
+                    Die Inhalte dieser Website werden mit gr&ouml;ßtm&ouml;glicher Sorgfalt recherchiert und
+                    implementiert. Fehler
+                    im Bearbeitungsvorgang sind dennoch nicht auszuschließen. Hinweise und Korrekturen senden Sie bitte
+                    an webmaster@uni-freiburg.de.<br>
+                    Eine Haftung f&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t dieser Webseiten
+                    kann trotz
+                    sorgf&auml;ltiger Pr&uuml;fung nicht &uuml;bernommen werden. Die Universit&auml;t Freiburg
+                    &uuml;bernimmt insbesondere
+                    keinerlei Haftung, f&uuml;r eventuelle Sch&auml;den oder Konsequenzen, die durch die direkte oder
+                    indirekte
+                    Nutzung der angebotenen Inhalte entstehen.<br>
+                    <br>
+                    <h6>Haftungsausschluss bei Querverweisen und Links</h6>
+                    Die Universit&auml;t Freiburg ist als Inhaltsanbieter f&uuml;r die eigenen Inhalte, die es zur
+                    Nutzung
+                    bereith&auml;lt, nach den allgemeinen Gesetzen verantwortlich. Von diesen eigenen Inhalten sind
+                    Querverweise auf die von anderen Anbietern bereitgehaltenen Inhalte zu unterscheiden. Diese fremden
+                    Inhalte stammen weder von der Universit&auml;t Freiburg, noch hat die Universit&auml;t Freiburg die
+                    M&ouml;glichkeit, den Inhalt von Seiten Dritter zu beeinflussen. Die Inhalte fremder Seiten, auf die
+                    die
+                    Universit&auml;t Freiburg mittels Links hinweist, spiegeln nicht die Meinung der Universit&auml;t
+                    Freiburg
+                    wieder, sondern dienen lediglich der Information und der Darstellung von Zusammenh&auml;ngen.
+                    Diese Feststellungen gelten f&uuml;r alle innerhalb des eigenen Internetangebotes gesetzten Links
+                    und
+                    Verweise sowie f&uuml;r Fremdeintr&auml;ge in von der Universit&auml;t Freiburg eingerichteten
+                    G&auml;steb&uuml;chern,
+                    Diskussionsforen und Mailinglisten. F&uuml;r illegale, fehlerhafte oder unvollst&auml;ndige Inhalte
+                    und
+                    insbesondere f&uuml;r Sch&auml;den, die aus der Nutzung oder Nichtnutzung solcherart dargebotener
+                    Informationen entstehen, haftet allein der Anbieter der Seite, auf welche verwiesen wurde.<br>
+                    <br>
+                    <h5>Datenschutzerkl&auml;rung</h5>
+                    <p>Verantwortlicher im Sinne der Datenschutzgesetze, insbesondere der EU-Datenschutzgrundverordnung
+                        (DSGVO), ist: Prof. Dr. Bernd Fakler.</p>
+                    <p></p>
+                    <h6>Ihre Betroffenenrechte</h6>
+                    <p>Unter den angegebenen Kontaktdaten unseres Datenschutzbeauftragten k&ouml;nnen Sie jederzeit
+                        folgende
+                        Rechte aus&uuml;ben:</p>
+                    <ul>
+                        <li>Auskunft &uuml;ber Ihre bei uns gespeicherten Daten und deren Verarbeitung (Art. 15 DSGVO),
+                        </li>
+                        <li>Berichtigung unrichtiger personenbezogener Daten (Art. 16 DSGVO),</li>
+                        <li>L&ouml;schung Ihrer bei uns gespeicherten Daten (Art. 17 DSGVO),</li>
+                        <li>Einschr&auml;nkung der Datenverarbeitung, sofern wir Ihre Daten aufgrund gesetzlicher
+                            Pflichten
+                            noch nicht l&ouml;schen d&uuml;rfen (Art. 18 DSGVO),</li>
+                        <li>Widerspruch gegen die Verarbeitung Ihrer Daten bei uns (Art. 21 DSGVO) und</li>
+                        <li>Daten&uuml;bertragbarkeit, sofern Sie in die Datenverarbeitung eingewilligt haben oder einen
+                            Vertrag mit uns abgeschlossen haben (Art. 20 DSGVO).</li>
+                    </ul>
+                    <p>Sofern Sie uns eine Einwilligung erteilt haben, k&ouml;nnen Sie diese jederzeit mit Wirkung
+                        f&uuml;r die
+                        Zukunft widerrufen.</p>
+                    <p>Sie k&ouml;nnen sich jederzeit mit einer Beschwerde an eine Aufsichtsbeh&ouml;rde wenden, z. B.
+                        an die
+                        zust&auml;ndige Aufsichtsbeh&ouml;rde des Bundeslands Ihres Wohnsitzes oder an die f&uuml;r uns
+                        als
+                        verantwortliche Stelle zust&auml;ndige Beh&ouml;rde.</p>
+                    <p>Eine Liste der Aufsichtsbeh&ouml;rden (f&uuml;r den nicht&ouml;ffentlichen Bereich) mit Anschrift
+                        finden Sie
+                        unter: <a href="https://www.bfdi.bund.de/DE/Service/Anschriften/Laender/Laender-node.html"
+                            target="_blank"
+                            rel="noopener nofollow">https://www.bfdi.bund.de/DE/Service/Anschriften/Laender/Laender-node.html</a>.
+                    </p>
+                    <h6>SSL-Verschl&uuml;sselung</h6>
+                    <p>Um die Sicherheit Ihrer Daten bei der &Uuml;bertragung zu sch&uuml;tzen, verwenden wir dem
+                        aktuellen Stand
+                        der Technik entsprechende Verschl&uuml;sselungsverfahren (z. B. SSL) &uuml;ber HTTPS.</p>
+
+                    <h6>Information &uuml;ber Ihr Widerspruchsrecht nach Art. 21 DSGVO</h6>
+                    Einzelfallbezogenes Widerspruchsrecht:<br>
+                    <p>Sie haben das Recht, aus Gr&uuml;nden, die sich aus Ihrer besonderen Situation ergeben, jederzeit
+                        gegen die Verarbeitung Sie betreffender personenbezogener Daten, die aufgrund Art. 6 Abs. 1 lit.
+                        f DSGVO (Datenverarbeitung auf der Grundlage einer Interessenabw&auml;gung) erfolgt, Widerspruch
+                        einzulegen; dies gilt auch f&uuml;r ein auf diese Bestimmung gest&uuml;tztes Profiling im Sinne
+                        von Art. 4
+                        Nr. 4 DSGVO.</p>
+                    <p>Legen Sie Widerspruch ein, werden wir Ihre personenbezogenen Daten nicht mehr verarbeiten, es sei
+                        denn, wir k&ouml;nnen zwingende schutzw&uuml;rdige Gr&uuml;nde f&uuml;r die Verarbeitung
+                        nachweisen, die Ihre
+                        Interessen, Rechte und Freiheiten &uuml;berwiegen, oder die Verarbeitung dient der
+                        Geltendmachung,
+                        Aus&uuml;bung oder Verteidigung von Rechtsanspr&uuml;chen.</p>
+                    Empf&auml;nger eines Widerspruchs: Prof. Dr. Bernd Fakler.<br>
+                    <br>
+                    <h6>&Auml;nderung unserer Datenschutzbestimmungen</h6>
+                    <p>Wir behalten uns vor, diese Datenschutzerkl&auml;rung anzupassen, damit sie stets den aktuellen
+                        rechtlichen Anforderungen entspricht oder um &Auml;nderungen unserer Leistungen in der
+                        Datenschutzerkl&auml;rung umzusetzen, z.B. bei der Einf&uuml;hrung neuer Services. F&uuml;r
+                        Ihren erneuten
+                        Besuch gilt dann die neue Datenschutzerkl&auml;rung.</p>
+                    <h6>Fragen an den Datenschutzbeauftragten</h6>
+                    <p>Wenn Sie Fragen zum Datenschutz haben, schreiben Sie uns bitte eine E-Mail oder wenden Sie sich
+                        direkt an die f&uuml;r den Datenschutz verantwortliche Person in unserer Organisation.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="d-flex justify-content-center">
+            <span class="text-muted">&copy 2021 Pierre Kreins & <a class="link-dark text-decoration-none"
+                    href="https://www.physiologie.uni-freiburg.de">Physiologisches Institut</a>,
+                Albert-Ludwigs-Universit&auml;t Freiburg.&nbsp;
+            </span><a class="link-dark text-decoration-none" data-bs-toggle="modal" href="#impressumModal">Impressum &
+                Datenschutz</a>.
+        </div>
+    </footer>
+</body>
+
+</html>

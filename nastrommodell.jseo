@@ -1,0 +1,42 @@
+{
+    /*Below are the two requried parameters*/
+    "func": function (xVector, P) {
+	return (P[0]*xVector[0]+P[1])*(Math.exp((xVector[0]-P[2])/P[3]))/(1+Math.exp((xVector[0]-P[2])/P[3]));        
+    },
+    "setInitial": function (x_mat, y_vec) {
+	var length = y_vec.length;
+
+	var half = Math.ceil(length/2);
+	
+	var sum1 =  y_vec.slice(0, half-1).reduce(function(pv, cv) { return Math.abs(pv) + Math.abs(cv); }, 0);
+	var sum2 =  y_vec.slice(half, length).reduce(function(pv, cv) { return Math.abs(pv) + Math.abs(cv); }, 0);
+
+	var slope;
+	if(sum1 < sum2 ){
+		slope = 4;
+	}else{
+		slope = -4;
+	}
+
+        return [2,350,-50,slope];
+    },
+    
+    /*Below is a functional optional parameter, 
+        any number of the internal parameters may be left off*/
+    "func_fit_params": {
+        "maxItt": 1010,     /*Default: 1000*/
+        "minPer": 0.9e-6,   /*Default: 1e-6*/
+        "checkItt": 4,      /*Default: 3*/
+        "converge": 1.21,   /*Default: 1.2*/
+        "diverge": -0.51,   /*Default: -0.5*/
+        "step": function (initParameters) {
+            var ret = [];
+            for (var i = 0; i < initParameters.length; i += 1) {
+                ret[i] = initParameters[i]/105; /*Default: x/100*/
+            }
+            return ret;
+        }
+    },
+
+    
+}
