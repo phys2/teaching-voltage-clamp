@@ -15,8 +15,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 const deltaT = 20;
 
-const maxVolt = 120;
-const maxAmp = 600;
+const dpi = window.devicePixelRatio;
+
+var maxVolt = 120;
+var maxAmp = 600;
+
+var ivMaxAmp = 600;
+var ivY0RelPos = 0.5;
+var ivX0RelPos = 0.5;
 
 var patchStatus = 0; //0 = reset , 1 = in bath, 2 = whole cell, 3 = recording passive ; 4 = recording voltage clampe ; 5 recording iv; 6 = passive recording done ; 7 voltage clamp recording done ; 8 = iv done
 var bathTimer, wholeCellTimer, ivCurveTimer, voltageClampTimer, passiveTimer, lastDrawnPotX, lastDrawnPotY, lastDrawnCurX, lastDrawnCurY;
@@ -34,16 +40,15 @@ var ivMaxPointMatrix = new Array();
 
 var ivFittedCurve = new Object();
 
-MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-    },
-    svg: {
-        fontCache: 'global'
-    }
-};
+var junctionPotentials = new Array();
+
+var updateOutputFieldsCounter = 0;
+
+var isDragging = false;
+
 
 $(function () {
+
     $("#waterBathButton").click(function () {
 
         if (patchStatus == 0) {
@@ -52,10 +57,10 @@ $(function () {
             $('#waterBathButton').attr("disabled", 'disabled');
             $('#wholeCellButton').removeAttr("disabled");
             bathTimerCounter = 0;
-            
-            $("#simImg").fadeTo(300,0.30, function() {
-                $("#simImg").attr("src",'ressources/in_bath_framed.svg');
-            }).fadeTo(200,1,function() {
+
+            $("#simImg").fadeTo(300, 0.30, function () {
+                $("#simImg").attr("src", 'ressources/in_bath_framed.svg');
+            }).fadeTo(200, 1, function () {
                 bathTimer = setInterval(updateBathReadout, deltaT);
             });
             return false;
@@ -72,14 +77,14 @@ $(function () {
 
             clearInterval(bathTimer);
 
-            $("#simImg").fadeTo(300,0.30, function() {
-                $("#simImg").attr("src",'ressources/in_oocyte_framed.svg');
-            }).fadeTo(200,1,function() {
+            $("#simImg").fadeTo(300, 0.30, function () {
+                $("#simImg").attr("src", 'ressources/in_oocyte_framed.svg');
+            }).fadeTo(200, 1, function () {
                 wholeCellTimer = setInterval(updateWholeCellReadout, deltaT);
             });
             return false;
 
-        
+
         }
     });
 
@@ -125,7 +130,7 @@ $(function () {
         clearInterval(voltageClampTimer);
         clearInterval(passiveTimer);
         $('#stopRecording').attr("disabled", 'disabled');
-        
+
 
         $('#startRecording').removeAttr("disabled");
 
@@ -156,6 +161,7 @@ $(function () {
 
     $("#reboot").click(function () {
         clearInterval(bathTimer);
+        clearInterval(wholeCellTimer);
         clearInterval(ivCurveTimer);
         clearInterval(voltageClampTimer);
         clearInterval(passiveTimer);
@@ -184,7 +190,12 @@ $(function () {
         $('#resultBody').html('');
         $('#resultHeader').hide();
         $('#resultBody').hide();
-        $("#simImg").attr("src",'ressources/outside_framed.svg');
+        $("#simImg").attr("src", 'ressources/outside_framed.svg');
+        junctionPotentials = new Array();
+        updateOutputFieldsCounter = 0;
+        maxAmp = 600;
+        ivMaxAmp = 600;
+        maxVolt = 120;
         canvasPointsMatrix = new Array();
         ivDataMatrix = new Array(600); for (let i = 0; i < 600; ++i) ivDataMatrix[i] = [0, 0];
         ivMaxPointMatrix = new Array();
@@ -193,15 +204,102 @@ $(function () {
         resizeCanvas();
     });
 
-    $('#selectedModel').change(function () {
-        if ($('#selectedModel').val() == '1') {
-            $('#modelDiv').html('$$I(U) = a \\cdot U + b$$');
-        } else if ($('#selectedModel').val() == '2') {
-            $('#modelDiv').html('$$I(U) = \\left(a \\cdot U + b\\right) \\cdot \\left( 1- \\frac{1}{ 1+ e^{\\frac{U-c}{d}} } \\right)$$');
+    document.getElementById('selectedModel').addEventListener("change", function () {
+        MathJax.typesetClear();
+        if (document.getElementById('selectedModel').value == '1') {
+            document.getElementById('modelDiv').innerHTML = '<p> $$I(U) = a \\cdot U + b$$ </p>';
+        } else if (document.getElementById('selectedModel').value == '2') {
+            document.getElementById('modelDiv').innerHTML = '<p> $$I(U) = \\left(a \\cdot U + b\\right) \\cdot \\left( 1- \\frac{1}{ 1+ e^{\\frac{U-c}{d}} } \\right)$$ </p>';
         }
-        MathJax.typeset();
+        MathJax.typeset([document.getElementById('modelDiv')]);
     });
 
+    $('#ampZoomIn').click(function () {
+        maxAmp = Math.round(maxAmp / 2);
+        paintMainCanvas();
+    });
+    $('#ampZoomOut').click(function () {
+        maxAmp = Math.round(maxAmp * 2);
+        paintMainCanvas();
+    });
+    $('#voltZoomIn').click(function () {
+        maxVolt = Math.round(maxVolt / 2);
+        paintMainCanvas();
+    });
+    $('#voltZoomOut').click(function () {
+        maxVolt = Math.round(maxVolt * 2);
+        paintMainCanvas();
+    });
+    $('#ampZoomIvIn').click(function () {
+        ivMaxAmp = Math.round(ivMaxAmp / 2);
+        paintIvCanvas();
+    });
+    $('#ampZoomIvOut').click(function () {
+        ivMaxAmp = Math.round(ivMaxAmp * 2);
+        paintIvCanvas();
+    });
+
+    ///BEGIN Drag over IV Canvas functions
+
+    function handleMouseDown(e) {
+
+        // set the drag flag
+        isDragging = true;
+    }
+
+    function handleMouseUp(e) {
+
+        // clear the drag flag
+        isDragging = false;
+    }
+
+    function handleMouseOut(e) {
+        // user has left the canvas, so clear the drag flag
+        isDragging = false;
+    }
+    function handleMouseMove(e) {
+        // if the drag flag is set, clear the canvas and draw the image
+        if (isDragging) {
+            var dX = e.movementX;
+            var dY = e.movementY;
+            var canvas = document.getElementById("analysisCanvas");
+            var height = canvas.offsetHeight;
+            var width = canvas.offsetWidth;
+            ivY0RelPos = ivY0RelPos + dY / height;
+            ivX0RelPos = ivX0RelPos + dX / width;
+            paintIvCanvas();
+        }
+    }
+
+    document.getElementById('analysisCanvas').addEventListener('mousedown', handleMouseDown);
+    document.getElementById('analysisCanvas').addEventListener('mousemove', handleMouseMove);
+    document.getElementById('analysisCanvas').addEventListener('mouseup', handleMouseUp);
+    document.getElementById('analysisCanvas').addEventListener('mouseout', handleMouseOut);
+
+    ///END Drag over IV Canvas functions
+
+    var bathCollapsible = document.getElementById('collapseBath');
+    var controlsCollapsible = document.getElementById('collapseControls');
+    var bathCaret = document.getElementById('bathCaret');
+    var controlsCaret = document.getElementById('controlsCaret');
+    bathCollapsible.addEventListener('hidden.bs.collapse', function () {
+        bathCaret.classList.replace('bi-caret-up-fill', 'bi-caret-down-fill');
+    });
+    bathCollapsible.addEventListener('shown.bs.collapse', function () {
+        bathCaret.classList.replace('bi-caret-down-fill', 'bi-caret-up-fill');
+    });
+    controlsCollapsible.addEventListener('hidden.bs.collapse', function () {
+        controlsCaret.classList.replace('bi-caret-up-fill', 'bi-caret-down-fill');
+    });
+    controlsCollapsible.addEventListener('shown.bs.collapse', function () {
+        controlsCaret.classList.replace('bi-caret-down-fill', 'bi-caret-up-fill');
+    });
+
+    var ro = new ResizeObserver(entries => {
+        resizeCanvas();
+    });
+
+    ro.observe(document.getElementById('screen'));
 
 
     resizeCanvas();
@@ -276,14 +374,14 @@ function importIvData() {
 }
 
 function fitCurve() {
-
+    document.getElementById('loadingSpinner').style.display = 'inline-block';
     var selectedModel = $('#selectedModel').val();
 
     var eq_obj;
     if (selectedModel == '1') {
-        eq_obj = amd_cf.getEquation('line.jseo');
+        eq_obj = amd_cf.getEquation('js/line.jseo');
     } else if (selectedModel == '2') {
-        eq_obj = amd_cf.getEquation('nastrommodell.jseo');
+        eq_obj = amd_cf.getEquation('js/nastrommodell.jseo');
     }
 
 
@@ -309,24 +407,25 @@ function fitCurve() {
         ivFittedCurve.parameters = res.parameters;
         if (selectedModel == '1') {
             ivFittedCurve.status = 1;
-            $('#resultBody').html('$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + '$$');
-            MathJax.typeset();
-            $('#resultHeader').show();
-            $('#resultBody').show();
+            $('#resultBody').empty().append("<p>" + '$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + '$$' + "</p>");
+
 
         } else if (selectedModel == '2') {
             ivFittedCurve.status = 2;
-            $('#resultBody').html('$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + ', c = ' + ivFittedCurve.parameters[2].toFixed(2) + ', d = ' + ivFittedCurve.parameters[3].toFixed(2) + '$$');
-            MathJax.typeset();
-            $('#resultHeader').show();
-            $('#resultBody').show();
+            $('#resultBody').empty().append("<p>" + '$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + ', c = ' + ivFittedCurve.parameters[2].toFixed(2) + ', d = ' + ivFittedCurve.parameters[3].toFixed(2) + '$$' + "</p>");
+
         }
+
+        $('#resultHeader').show();
+        $('#resultBody').show();
+        MathJax.typesetClear();
+        MathJax.typeset([document.getElementById('resultBody')]);
 
         var fittedXValues = new Array();
         var fittedYValues = new Array();
         var fittedCondYValues = new Array();
-        var xStart = -100;
-        var xEnd = 100;
+        var xStart = -200;
+        var xEnd = 200;
         for (let i = xStart; i <= xEnd; i += 0.1) {
             if (selectedModel == '1') {
                 fittedYValues.push(lineModel(i, ivFittedCurve.parameters));
@@ -343,16 +442,12 @@ function fitCurve() {
         ivFittedCurve.condValues = fittedCondYValues;
 
         paintIvCanvas();
+        document.getElementById('loadingSpinner').style.display = 'none';
 
 
     }).catch(function (err) {
         console.error('1 did not work:', err);
     });
-
-
-
-
-
 
 }
 
@@ -360,8 +455,15 @@ function paintIvCanvas() {
 
     var canvas = document.getElementById("analysisCanvas");
     var ctx = canvas.getContext("2d");
-    var height = canvas.height;
-    var width = canvas.width;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpi, dpi);
+    var height = canvas.getBoundingClientRect().height;
+    var width = canvas.getBoundingClientRect().width;
+
+    ctx.fillStyle = "white";
+
+    ctx.fillRect(0, 0, width, height);
 
     ctx.strokeStyle = 'black';
 
@@ -370,65 +472,65 @@ function paintIvCanvas() {
 
     ctx.beginPath();
 
-    ctx.lineWidth = '2.5';
+    ctx.lineWidth = '1.5';
 
-    ctx.moveTo(getXValue(width, 0, 200), 0);
-    ctx.lineTo(getXValue(width, 0, 200), height);
-    ctx.moveTo(0, getYValue(height, 0, 1200));
-    ctx.lineTo(width, getYValue(height, 0, 1200));
+    ctx.moveTo(getXValue(width, 0, 200, ivX0RelPos), 0);
+    ctx.lineTo(getXValue(width, 0, 200, ivX0RelPos), height);
+    ctx.moveTo(0, getYValue(height, 0, 2*ivMaxAmp, ivY0RelPos));
+    ctx.lineTo(width, getYValue(height, 0, 2*ivMaxAmp, ivY0RelPos));
 
     ctx.stroke();
 
-    let ampStep = 100;
+    let ampStep = Math.round(ivMaxAmp/6);
     let voltStep = 10;
 
-    ctx.setLineDash([3, 3]);
+    ctx.setLineDash([2, 2]);
 
     ctx.strokeStyle = '#6b6b6b';
     ctx.lineWidth = '1';
 
     ctx.beginPath();
 
-    ctx.font = "30px Arial";
-
+    ctx.font = "11px Arial";
+    ctx.fillStyle = "black";
     ctx.textBaseline = 'bottom';
     ctx.textAlign = "center";
 
-    for (let i = 1; i < 11; i++) {
-        ctx.moveTo(getXValue(width, i * voltStep, 200), 0);
-        ctx.lineTo(getXValue(width, i * voltStep, 200), height - 15);
+    for (let i = 1; i < 21; i++) {
+        ctx.moveTo(getXValue(width, i * voltStep, 200, ivX0RelPos), 0);
+        ctx.lineTo(getXValue(width, i * voltStep, 200, ivX0RelPos), height - 15);
         let voltString = (i * voltStep).toString();
 
-        ctx.fillText(voltString, getXValue(width, i * voltStep, 200), height);
+        ctx.fillText(voltString, getXValue(width, i * voltStep, 200, ivX0RelPos), height);
 
-        if (i == 10) {
+        if (i % 10 == 0) {
 
-            ctx.fillText('mV', getXValue(width, i * voltStep, 200), height - 12);
+            ctx.fillText('mV', getXValue(width, i * voltStep, 200, ivX0RelPos), height - 12);
         }
 
-        ctx.moveTo(getXValue(width, -1 * i * voltStep, 200), 0);
-        ctx.lineTo(getXValue(width, -1 * i * voltStep, 200), height - 15);
+        ctx.moveTo(getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), 0);
+        ctx.lineTo(getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height - 15);
         voltString = (-1 * i * voltStep).toString();
-        ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200), height);
+        ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height);
     }
 
     ctx.strokeStyle = 'black';
     ctx.textBaseline = 'middle';
     ctx.textAlign = "left";
 
-    for (let i = 1; i < 7; i++) {
-        ctx.moveTo(0, getYValue(height, i * ampStep, 1200));
-        ctx.lineTo(width, getYValue(height, i * ampStep, 1200));
+    for (let i = 1; i < 20; i++) {
+        ctx.moveTo(0, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        ctx.lineTo(width, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
         let ampString = (i * ampStep).toString();
-        if (i == 6) { ampString += ' nA' }
-        ctx.fillText(ampString, 0, getYValue(height, i * ampStep, 1200));
+        if (i % 6 == 0) { ampString += ' nA' }
+        ctx.fillText(ampString, 0, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
 
-        ctx.moveTo(0, getYValue(height, -1 * i * ampStep, 1200));
-        ctx.lineTo(width, getYValue(height, -1 * i * ampStep, 1200));
+        ctx.moveTo(0, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        ctx.lineTo(width, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
         ampString = (-1 * i * ampStep).toString();
-        if (i != 6) {
-            ctx.fillText(ampString, 0, getYValue(height, -1 * i * ampStep, 1200));
-        }
+
+        ctx.fillText(ampString, 0, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+
     }
 
     ctx.stroke();
@@ -436,8 +538,8 @@ function paintIvCanvas() {
     //points
     for (let averagedPoint of ivMaxPointMatrix) {
         ctx.beginPath();
-
-        ctx.arc(getXValue(width, averagedPoint.referencePotential, 200), getYValue(height, averagedPoint.averageCurrent, 1200), 8, 0, Math.PI * 2, false);
+        ctx.fillStyle = "black";
+        ctx.arc(getXValue(width, averagedPoint.referencePotential, 200, ivX0RelPos), getYValue(height, averagedPoint.averageCurrent, 2*ivMaxAmp, ivY0RelPos), 4, 0, Math.PI * 2, false);
         ctx.fill();
     }
     //fitted curve
@@ -446,52 +548,55 @@ function paintIvCanvas() {
         ctx.beginPath();
         ctx.setLineDash([]);
         ctx.strokeStyle = 'green';
-        ctx.lineWidth = '3';
-        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200), getYValue(height, ivFittedCurve.yValues[0], 1200));
+        ctx.lineWidth = '1.5';
+        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200, ivX0RelPos), getYValue(height, ivFittedCurve.yValues[0], 2*ivMaxAmp, ivY0RelPos));
         for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
-            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200), getYValue(height, ivFittedCurve.yValues[i], 1200));
+            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200, ivX0RelPos), getYValue(height, ivFittedCurve.yValues[i], 2*ivMaxAmp, ivY0RelPos));
         }
         ctx.stroke();
 
         //conductance
         canvas = document.getElementById("conductanceCanvas");
         ctx = canvas.getContext("2d");
-        height = canvas.height;
-        width = canvas.width;
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpi, dpi);
+        height = canvas.getBoundingClientRect().height;
+        width = canvas.getBoundingClientRect().width;
 
         ctx.strokeStyle = 'black';
 
         ctx.beginPath();
-        ctx.lineWidth = '2.5';
-        ctx.moveTo(0, getYValue(height, 0, 1.5, 1.2));
-        ctx.lineTo(width - 30, getYValue(height, 0, 1.5, 1.2));
-        ctx.moveTo(0, getYValue(height, 1, 1.5, 1.2));
-        ctx.lineTo(width - 30, getYValue(height, 1, 1.5, 1.2));
-        ctx.moveTo(getXValue(width, 0, 200), getYValue(height, 1.03, 1.5, 1.2));
-        ctx.lineTo(getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 1.2));
+        ctx.lineWidth = '1.5';
+        ctx.moveTo(0, getYValue(height, 0, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 1, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 1, 1.5, 0.833));
+        ctx.moveTo(getXValue(width, 0, 200), getYValue(height, 1.03, 1.5, 0.833));
+        ctx.lineTo(getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 0.833));
         ctx.stroke();
 
         ctx.beginPath();
 
-        ctx.setLineDash([3, 3]);
+        ctx.setLineDash([1.5, 1.5]);
         ctx.strokeStyle = '#6b6b6b';
         ctx.lineWidth = '1';
-        ctx.font = "30px Arial";
+        ctx.font = "11px Arial";
         ctx.textBaseline = 'top';
         ctx.textAlign = "center";
 
-        ctx.moveTo(0, getYValue(height, 0.25, 1.5, 1.2));
-        ctx.lineTo(width - 30, getYValue(height, 0.25, 1.5, 1.2));
-        ctx.moveTo(0, getYValue(height, 0.5, 1.5, 1.2));
-        ctx.lineTo(width - 30, getYValue(height, 0.5, 1.5, 1.2));
-        ctx.moveTo(0, getYValue(height, 0.75, 1.5, 1.2));
-        ctx.lineTo(width - 30, getYValue(height, 0.75, 1.5, 1.2));
+        ctx.moveTo(0, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 0.75, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.75, 1.5, 0.833));
 
-        ctx.fillText('0', getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 1.2));
+        ctx.fillText('0', getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 0.833));
 
         for (let i = 1; i < 10; i++) {
-            ctx.moveTo(getXValue(width, i * voltStep, 200), getYValue(height, 1.03, 1.5, 1.2));
-            ctx.lineTo(getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 1.2));
+            ctx.moveTo(getXValue(width, i * voltStep, 200), getYValue(height, 1.03, 1.5, 0.833));
+            ctx.lineTo(getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
             let voltString = (i * voltStep).toString();
 
             if (i == 9) {
@@ -499,46 +604,46 @@ function paintIvCanvas() {
                 voltString += ' mV'
             }
 
-            ctx.fillText(voltString, getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 1.2));
+            ctx.fillText(voltString, getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
 
 
 
-            ctx.moveTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, 1.03, 1.5, 1.2));
-            ctx.lineTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 1.2));
+            ctx.moveTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, 1.03, 1.5, 0.833));
+            ctx.lineTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
             voltString = (-1 * i * voltStep).toString();
-            ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 1.2));
+            ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
         }
         ctx.stroke();
 
-        ctx.font = "bold 40px Arial";
+        ctx.font = "bold 11px Arial";
         ctx.textAlign = "right";
         ctx.textBaseline = 'middle';
-        ctx.fillText('0', width, getYValue(height, 0, 1.5, 1.2));
-        ctx.fillText('0.25', width, getYValue(height, 0.25, 1.5, 1.2));
-        ctx.fillText('0.5', width, getYValue(height, 0.5, 1.5, 1.2));
-        ctx.fillText('0.75', width, getYValue(height, 0.75, 1.5, 1.2));
-        ctx.fillText('1', width, getYValue(height, 1, 1.5, 1.2));
+        ctx.fillText('0', width, getYValue(height, 0, 1.5, 0.833));
+        ctx.fillText('0.25', width, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.fillText('0.5', width, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.fillText('0.75', width, getYValue(height, 0.75, 1.5, 0.833));
+        ctx.fillText('1', width, getYValue(height, 1, 1.5, 0.833));
 
         ctx.beginPath();
 
 
         ctx.strokeStyle = 'blue';
         ctx.setLineDash([]);
-        ctx.lineWidth = '5';
-        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200), getYValue(height, ivFittedCurve.condValues[0], 1.5, 1.2));
+        ctx.lineWidth = '2.5';
+        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200), getYValue(height, ivFittedCurve.condValues[0], 1.5, 0.833));
         for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
-            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200), getYValue(height, ivFittedCurve.condValues[i], 1.5, 1.2));
+            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200), getYValue(height, ivFittedCurve.condValues[i], 1.5, 0.833));
         }
         ctx.stroke();
     }
 }
 
-function getXValue(width, x, amp, yShiftFactor = 2) {
-    return Math.round((x / amp) * (width - 30) + Math.round((width - 30) / yShiftFactor) + 15);
+function getXValue(width, x, amp, yShiftFactor = 0.5) {
+    return Math.round((x / amp) * (width - 30) + Math.round((width - 30) * yShiftFactor) + 15);
 }
 
-function getYValue(height, y, amp, yShiftFactor = 2) {
-    return Math.round(-1 * (y / amp) * (height - 30) + Math.round((height - 30) / yShiftFactor) + 15);
+function getYValue(height, y, amp, yShiftFactor = 0.5) {
+    return Math.round(-1 * (y / amp) * (height - 30) + Math.round((height - 30) * yShiftFactor) + 15);
 }
 
 function recordPassive() {
@@ -549,10 +654,8 @@ function recordPassive() {
     var caEx = getSelectedIon("Ca");
     var clEx = getSelectedIon("Cl");
 
-    var naIn = 12;
-    var kIn = 155;
-    var caIn = 0.0001;
-    var clIn = 4;
+    var naIn, kIn, caIn, clIn;
+    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
     var permeabilities = getPermeabilities(lastPotential, null);
 
@@ -574,9 +677,8 @@ function recordPassive() {
 
 
     var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
-    $('#potentialOutput').val(potential.toFixed(1));
-    $('#currentOutput').val(current.toFixed(0));
 
+    updateOutputFields(potential, current);
 
     if (voltageClampCounter == (60000 / deltaT)) {
         //stop
@@ -608,10 +710,8 @@ function recordVoltagClamp() {
     var clEx = getSelectedIon("Cl");
 
 
-    var naIn = 12;
-    var kIn = 155;
-    var caIn = 0.0001;
-    var clIn = 4;
+    var naIn, kIn, caIn, clIn;
+    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
 
     var permeabilities = getPermeabilities(clampPotential, null);
@@ -626,9 +726,8 @@ function recordVoltagClamp() {
 
     var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
 
-    $('#potentialOutput').val(clampPotential.toFixed(1));
-    $('#currentOutput').val(current.toFixed(0));
 
+    updateOutputFields(clampPotential, current);
 
 
     if (voltageClampCounter == (60000 / deltaT)) {
@@ -661,11 +760,8 @@ function recordIvCurve() {
     var caEx = getSelectedIon("Ca");
     var clEx = getSelectedIon("Cl");
 
-
-    var naIn = 12;
-    var kIn = 155;
-    var caIn = 0.0001;
-    var clIn = 4;
+    var naIn, kIn, caIn, clIn;
+    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
 
     var permeabilities = getPermeabilities(clampPotential, timeAtClampPotential);
@@ -680,8 +776,7 @@ function recordIvCurve() {
 
     var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
 
-    $('#potentialOutput').val(clampPotential.toFixed(1));
-    $('#currentOutput').val(current.toFixed(0));
+    updateOutputFields(clampPotential, current);
 
     ivDataMatrix[ivCurveCounter] = [clampPotential, current];
 
@@ -732,11 +827,8 @@ function updateWholeCellReadout() {
 
     var time = timerCounterToTime(bathTimerCounter);
 
-    var naIn = 12;
-    var kIn = 155;
-    var caIn = 0.0001;
-    var clIn = 4;
-
+    var naIn, kIn, caIn, clIn;
+    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
     var permeabilities = getPermeabilities(lastPotential, null);
 
@@ -759,8 +851,7 @@ function updateWholeCellReadout() {
 
 
     var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
-    $('#potentialOutput').val(potential.toFixed(1));
-    $('#currentOutput').val(current.toFixed(0));
+    updateOutputFields(potential, current);
 
 
     if (bathTimerCounter == (60000 / deltaT)) {
@@ -779,30 +870,25 @@ function updateWholeCellReadout() {
 
 function getPermeabilities(potential, timeAtPotential) {
     var selectedChannel = $("#selectedChannel").val();
-
-
     switch (selectedChannel) {
         case '1':
             return [0, 4, 0, 0];
-            break;
-            case '1':
-                return [0, 4, 0, 0];
-                break;
+            break;        
         case '2'://kv
-                var slope = 4;
-                var vhalf = -25;
-                var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-                var a = 0.86403262;
-                var b = 0.05;
-                var c = 0.01;
-                var d = 10;
-                if (timeAtPotential != null) {
-                    var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
-                    conductance *= correction;
-                }
-    
-                return [0, conductance, 0, 0];
-                break;
+            var slope = 4;
+            var vhalf = -25;
+            var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
+            var a = 0.86403262;
+            var b = 0.05;
+            var c = 0.01;
+            var d = 10;
+            if (timeAtPotential != null) {
+                var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
+                conductance *= correction;
+            }
+
+            return [0, conductance, 0, 0];
+            break;
         case '3': //kv ohne kinetik
             var slope = -4;
             var vhalf = -50;
@@ -829,7 +915,7 @@ function getPermeabilities(potential, timeAtPotential) {
             var slope = -6;
             var vhalf = -45;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-            
+
 
             return [conductance, 0, 0, 0];
             break;
@@ -864,19 +950,15 @@ function getPermeabilities(potential, timeAtPotential) {
             return [0, 0, conductance, 0];
             break;
         case '8':
-                return [0, 0, 0, 1];
-                break;
+            return [0, 0, 0, 1];
+            break;
     }
 
 
 }
 
 function getSelectedIon(ion) {
-
-
     var selectedIon = '#' + ion + $('input[name=selectedSolution]:checked').val();
-
-
     var concentration = parseInt($(selectedIon).val());
     return concentration;
 }
@@ -891,8 +973,7 @@ function updateBathReadout() {
     lastPotential = potential;
     var pipetteResistance = 0.2; //megOhm
     var current = -1 * potential / pipetteResistance;
-    $('#potentialOutput').val(potential.toFixed(1));
-    $('#currentOutput').val(current.toFixed(0));
+    updateOutputFields(potential, current);
 
     if (bathTimerCounter == (60000 / deltaT)) {
 
@@ -912,13 +993,15 @@ function updateBathReadout() {
 function paintMainCanvas() {
     drawGrid();
     if (canvasPointsMatrix.length > 1) {
-        
         var canvas = document.getElementById("mainCanvas");
         var ctx = canvas.getContext("2d");
-        ctx.lineWidth = '6';
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpi, dpi);
+        ctx.lineWidth = '2';
         ctx.setLineDash([]);
-        var height = canvas.height;
-        var width = canvas.width;
+        var height = canvas.getBoundingClientRect().height;
+        var width = canvas.getBoundingClientRect().width;
 
         var yStep = (height / 4);
 
@@ -933,16 +1016,12 @@ function paintMainCanvas() {
         ctx.moveTo(xPosition, yPosition);
 
         for (let i = 1; i < canvasPointsMatrix.length; i++) {
-
-
-
             time = canvasPointsMatrix[i][0];
             potential = canvasPointsMatrix[i][1];
 
             xPosition = Math.round((time / 60) * width);
             yPosition = Math.round(3 * yStep - (potential / maxVolt) * (yStep - 20));
             ctx.lineTo(xPosition, yPosition);
-
         }
         ctx.stroke();
 
@@ -958,36 +1037,33 @@ function paintMainCanvas() {
         ctx.moveTo(xPosition, yPosition);
 
         for (let i = 1; i < canvasPointsMatrix.length; i++) {
-
             time = canvasPointsMatrix[i][0];
             current = canvasPointsMatrix[i][2];
 
             xPosition = Math.round((time / 60) * width);
             yPosition = Math.round(yStep - (current / maxAmp) * (yStep - 20));
             ctx.lineTo(xPosition, yPosition);
-
         }
         ctx.stroke();
-
     }
 }
-
-
 
 
 function drawGrid() {
     var canvas = document.getElementById("mainCanvas");
     var ctx = canvas.getContext("2d");
-    var height = canvas.height;
-    var width = canvas.width;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpi, dpi);
+
+    var height = canvas.getBoundingClientRect().height;
+    var width = canvas.getBoundingClientRect().width;
 
     ctx.clearRect(0, 0, width, height);
 
     ctx.strokeStyle = "black";
-    ctx.lineWidth = "3";
+    ctx.lineWidth = "1.25";
     ctx.setLineDash([]);
-
-
 
     ctx.beginPath();
     var yStep = Math.round(height / 4);
@@ -997,15 +1073,15 @@ function drawGrid() {
     ctx.lineTo(width, yStep);
     ctx.moveTo(0, 3 * yStep);
     ctx.lineTo(width, 3 * yStep);
-    var yUp = yStep - 6;
-    var yDown = yStep + 6;
+    var yUp = yStep - 3;
+    var yDown = yStep + 3;
     for (let z = 1; z < 60; z++) {
         var x = Math.round(z * xStep);
         ctx.moveTo(x, yUp);
         ctx.lineTo(x, yDown);
     }
-    yUp = 3 * yStep - 6;
-    yDown = 3 * yStep + 6;
+    yUp = 3 * yStep - 3;
+    yDown = 3 * yStep + 3;
     for (let z = 1; z < 60; z++) {
         var x = Math.round(z * xStep);
         ctx.moveTo(x, yUp);
@@ -1023,15 +1099,15 @@ function drawGrid() {
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.lineWidth = "2";
-    ctx.setLineDash([8, 8]);
+    ctx.lineWidth = "1";
+    ctx.setLineDash([4, 4]);
     ctx.strokeStyle = "#8f8f8f";
 
-    var deltaY = (yStep - 30) / 6;
+    var deltaY = (yStep - 15) / 6;
     var voltStep = Math.round(maxVolt / 6);
     var ampStep = Math.round(maxAmp / 6);
 
-    ctx.font = "30px Arial";
+    ctx.font = "13px Arial";
     ctx.textBaseline = 'middle';
     ctx.textAlign = "left";
 
@@ -1047,10 +1123,10 @@ function drawGrid() {
         var negVoltage = Math.round(-1 * z * voltStep).toString();
         var negAmpage = Math.round(-1 * z * ampStep).toString();
 
-        ctx.fillText(voltage, 80, 3 * yStep - y);
-        ctx.fillText(negVoltage, 80, 3 * yStep + y);
-        ctx.fillText(ampage, 80, yStep - y);
-        ctx.fillText(negAmpage, 80, yStep + y);
+        ctx.fillText(voltage, 23, 3 * yStep - y);
+        ctx.fillText(negVoltage, 23, 3 * yStep + y);
+        ctx.fillText(ampage, 23, yStep - y);
+        ctx.fillText(negAmpage, 23, yStep + y);
 
 
         ctx.moveTo(0, yStep + y);
@@ -1065,25 +1141,61 @@ function drawGrid() {
 
     ctx.stroke();
 
-    ctx.font = "30px Arial";
+    ctx.font = "13px Arial";
     ctx.textBaseline = 'top';
     ctx.textAlign = "right";
 
     ctx.beginPath();
-    ctx.fillText("60 s", width - 30, yStep + 15);
-    ctx.fillText("60 s", width - 30, 3 * yStep + 15);
+    ctx.fillText("60 s", width - 3, yStep + 7);
+    ctx.fillText("60 s", width - 3, 3 * yStep + 7);
     ctx.stroke();
 
 
 }
 
 function getJunctionPotential() {
+    var extracellularConcentrations = [getSelectedIon("Na"), getSelectedIon("K"), getSelectedIon("Ca"), getSelectedIon("Cl")];
 
-    return -1.8;
+    for (let junctionPotential of junctionPotentials) {
+        if (junctionPotential.extracellularConcentrations[0] == extracellularConcentrations[0]
+            && junctionPotential.extracellularConcentrations[1] == extracellularConcentrations[1]
+            && junctionPotential.extracellularConcentrations[2] == extracellularConcentrations[2]
+            && junctionPotential.extracellularConcentrations[3] == extracellularConcentrations[3]) {
+            return junctionPotential.potential;
+        }
+    }
+    return calculateJunctionPotential(extracellularConcentrations);
 }
 
-function getInternalConcentrations(){
-    return [12 , 155, 0.0001, 4];
+function calculateJunctionPotential(extracellularConcentrations) {
+    var junctionPotential = new Object();
+
+    var pipetteConcentrations = [0, 3000, 0, 3000];
+    var valencies = [1, 1, 2, -1];
+    var mobilities = [0.682, 1, 0.81, 1.0388];
+    var rtfConstant = 61.5;
+
+    var sum1 = 0;
+    var sum2 = 0;
+    var sum3 = 0;
+    var sum4 = 0;
+
+    for (let i = 0; i < 4; i++) {
+        sum1 += valencies[i] * valencies[i] * mobilities[i] * pipetteConcentrations[i];
+        sum2 += valencies[i] * valencies[i] * mobilities[i] * extracellularConcentrations[i];
+        sum3 += valencies[i] * mobilities[i] * (extracellularConcentrations[i] - pipetteConcentrations[i]);
+        sum4 += valencies[i] * valencies[i] * mobilities[i] * (extracellularConcentrations[i] - pipetteConcentrations[i]);
+    }
+
+    junctionPotential.potential = rtfConstant * (sum3 / sum4) + Math.log(sum1 / sum2);
+
+    junctionPotential.extracellularConcentrations = extracellularConcentrations;
+    junctionPotentials.push(junctionPotential);
+    return junctionPotential.potential;
+}
+
+function getInternalConcentrations() {
+    return [12, 155, 0.0001, 4];
 }
 
 function getNoise(a) {
@@ -1096,14 +1208,16 @@ function average(nums) {
 
 function resizeCanvas() {
     var canvas = document.getElementById("mainCanvas");
-    canvas.width = 3 * canvas.offsetWidth;
-    canvas.height = 3 * canvas.offsetHeight;
+    var ctx = canvas.getContext("2d");
+
+    canvas.width = dpi * canvas.offsetWidth;
+    canvas.height = dpi * canvas.offsetHeight;
     canvas = document.getElementById("analysisCanvas");
-    canvas.width = 3 * canvas.offsetWidth;
-    canvas.height = 3 * canvas.offsetHeight;
+    canvas.width = dpi * canvas.offsetWidth;
+    canvas.height = dpi * canvas.offsetHeight;
     canvas = document.getElementById("conductanceCanvas");
-    canvas.width = 3 * canvas.offsetWidth;
-    canvas.height = 3 * canvas.offsetHeight;
+    canvas.width = dpi * canvas.offsetWidth;
+    canvas.height = dpi * canvas.offsetHeight;
     if (typeof canvasPointsMatrix !== 'undefined') {
         paintMainCanvas();
     }
@@ -1112,7 +1226,6 @@ function resizeCanvas() {
             paintIvCanvas();
         }
     }
-
 }
 
 function timerCounterToTime(a) {
@@ -1125,6 +1238,16 @@ function naCurrentModel(x, p) {
 
 function conductanceModel(x, p) {
     return (1 - 1 / (1 + Math.exp((x - p[2]) / p[3])));
+}
+
+function updateOutputFields(potential, current) {
+    if (updateOutputFieldsCounter > 10) {
+        $('#potentialOutput').val(potential.toFixed(1));
+        $('#currentOutput').val(current.toFixed(0));
+        updateOutputFieldsCounter = 0;
+    } else {
+        updateOutputFieldsCounter++;
+    }
 }
 
 function lineModel(x, p) {

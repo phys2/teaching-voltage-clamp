@@ -19,28 +19,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <meta charset="utf-8">
     <title>Spannungsklemme von Oozyten</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--CSS-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css?v=131021">
-
-    <script src="amd_core-1.0.1.min.js"></script>
-
+    <link rel="stylesheet" href="style.css?v=261021">
+    <!--JS-->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js">
+        </script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="js/amd_core-1.0.1.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-
-
-
-    <script src="scripts.js?v=141021"></script>
-
+    <script src="js/scripts.min.js?v=251021"></script>
+    <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" href="favicon.svg">
@@ -54,8 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <a class="navbar-brand" href="#">
-                    <img src="favicon.svg"
-                        alt="" height="24" class="d-inline-block align-text-top" id="logo">
+                    <img src="favicon.svg" alt="" height="24" class="d-inline-block align-text-top" id="logo">
                     Praktikum Physiologie
                 </a>
                 <div class="collapse navbar-collapse" id="navbarNav">
@@ -83,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
             <div class="offcanvas-body">
                 <p class="h5">Einleitung</p>
                 <p>
-                    Ziel dieses Programms und des Praktikumsversuch &quot;Membranpotential&quot; ist es, zu verstehen,
+                    Ziel dieses Programms und des Praktikumsversuchs &quot;Membranpotential&quot; ist es, zu verstehen,
                 <ul>
                     <li>wie ein Membranpotential durch unterschiedliche intra- und extrazellul&auml;re
                         Ionenkonzentrationen entsteht,</li>
@@ -93,13 +96,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         experimentell bestimmt werden kann).</li>
                 </ul>
                 Dazu wird ein Versuchsaufbau simuliert, der tats&auml;chlich auch von Elektrophysiologen zur Erforschung
-                von z.&nbsp;B. Ionenkan&auml;len verwendet wird! Grundlage f&uuml;r den Versuch sind genetisch
-                modifizierte Oozyten aus <i>Xenopus laevis</i>, die eine einzelne Art an Ionenkan&auml;len in großer
-                Menge exprimieren. Die Oozyten eignen sich, allein aufgrund ihrer Gr&ouml;ße, sehr gut um direkte
+                von z.&nbsp;B. Ionenkan&auml;len verwendet wird! Grundlage f&uuml;r den Versuch sind Oozyten aus
+                <i>Xenopus laevis</i>, die nach Injektion einer entsprechenden mRNA einen bestimmten Ionenkanal in
+                großer Menge exprimieren. Die Oozyten eignen sich, allein aufgrund ihrer Gr&ouml;ße, sehr gut um direkte
                 Messungen des Membranpotentials durchzuf&uuml;hren. Dazu wird eine, mit einer Salzl&ouml;sung
-                gef&uuml;llte, spitze Glas-Mikroelektrode bis ins Cytosol der Oozyte gestochen. So kann eine zwischen
-                der Membraninnenseite und der Badl&ouml;sung bestehende Potentialdifferenz, sprich das Membranpotential,
-                gemessen werden.
+                (3&nbsp;M&nbsp;KCl) gef&uuml;llte, spitze Glas-Mikroelektrode bis ins Cytosol der Oozyte gestochen. So
+                kann eine zwischen der Membraninnenseite und der Badl&ouml;sung bestehende Potentialdifferenz, sprich
+                das Membranpotential, gemessen werden.
                 </p>
                  
                 <p class="h5">Ablauf der Versuchssimulation</p>
@@ -108,16 +111,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                     <li>Als erstes musst du festlegen, welche Oozyten-Charge, sprich welchen exprimierten Ionenkanal du
                         untersuchen willst. W&auml;hle den gew&uuml;nschten Kanal im Fenster &quot;Bedienung&quot; aus.
                     </li>
-                    <li>Die Badl&ouml;sung kann <small>(auch w&auml;hrend des Experiments zu jeder Zeit)</small> im
-                        Fenster &quot;Badl&ouml;sung&quot; ver&auml;ndert werden. Es stehen zwei Eingabezeilen zur
+                    <li>Die Badl&ouml;sung kann <small>(auch jederzeit w&auml;hrend des Experiments)</small> im Fenster
+                        &quot;Badl&ouml;sung&quot; ver&auml;ndert werden. Es stehen zwei Eingabezeilen zur
                         Verf&uuml;gung, um ein schnelles Switchen zwischen den L&ouml;sungen zu erlauben.</li>
-                    <li>Jetzt kannst du die Pipette zun&auml;chst ins Wasserbad f&uuml;hren. Der Messschreiber beginnt
-                        automatisch damit, die Werte des Spannungs- (unten, rot) und Strommesser (oben, schwarz)
+                    <li>Jetzt kannst du die Elektrode zun&auml;chst ins Wasserbad f&uuml;hren. Das Messger&auml;t
+                        beginnt automatisch damit, die Werte von Spannung (unten, rot) und Strom (oben, schwarz)
                         aufzunehmen.  </li>
                     <li><small>Wie du siehst, sorgt bereits der Kontakt der Elektrode mit der Badl&ouml;sung f&uuml;r
                             eine kleine, messbare Potentialdifferenz. Dieses sogenannte &quot;Junction&quot;-Potential
                             ist messtechnisch bedingt und f&uuml;r die Messung nicht erw&uuml;nscht. Es kann mit dem
-                            sogenannten &quot;Offset&quot;-Potential (Anzeige &uuml;ber dem Messschreiber) ausgeglichen
+                            sogenannten &quot;Offset&quot;-Potential (Anzeige &uuml;ber dem Messdisplay) ausgeglichen
                             werden. Ein Klick auf den Button &quot;Komp.&quot; gen&uuml;gt.</small></li>
                     <li>Nun kannst du die Elektrode in die Zelle stechen. Beobachte, welches Membranpotential jetzt
                         angezeigt wird!</li>
@@ -127,41 +130,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                 auf  unterschiedliche Badl&ouml;sungen passiert.</li>
                             <li>Ganz anders funktioniert die Spannungsklemme: Hierbei wird das Membranpotential nicht
                                 mehr gemessen, sondern aktiv durch die Elektrode vorgegeben. Gleichzeitig wird aber
-                                weiterhin der erzeugte Strom &uuml;ber die Membran gemessen. Du kannst das
-                                Membranpotential V<sub>mem</sub>, auf das du die Oozyte klemmen m&ouml;chtest,
-                                w&auml;hlen.</li>
+                                weiterhin der Strom &uuml;ber die Membran gemessen. Du kannst das Membranpotential
+                                V<sub>mem</sub>, auf das du die Oozyte klemmen m&ouml;chtest, beliebig w&auml;hlen.
+                                (dr&uuml;cke dann &quot;Start&quot;</li>
+                            <li>Neben der Spannungsklemme bei einem festen Membranpotential steht auch der Modus
+                                &quot;IV-Curve&quot; zur Wahl.</li>
                         </ul>
                     </li>
                 </ul>
                 </p>
-                 
                 <p class="h5">IV-Curve</p>
                 <p>
-                    Neben der Spannungsklemme bei einem festen Membranpotential steht auch der Modus
-                    &quot;IV-Curve&quot; zur Wahl.
                 <ul>
                     <li>Die Zelle wird zun&auml;chst auf V<sub>mem</sub> geklemmt, dann wird das Membranpotential
-                        pulsartig f&uuml;r kurze Zeit erh&ouml;ht. Dies wird treppenf&ouml;rmig wiederholt, jeder Puls
-                        bei einem h&ouml;heren Membranpotential.</li>
-                    <li>Gleichzeitig wird der erzeugte Strom &uuml;ber die Membran weiterhin gemessen.</li>
-                    <li>Die aus der IV-Curve-Messung gewonnen Daten erlauben die Bestimmung einer einfachen
-                        Strom-Spannung-Beziehung. &quot;Lade&quot; dazu, sobald die Messung abgeschlossen ist (60s), die
-                        Daten in das Fenster &quot;Strom-Spannung-Beziehung&quot;. </li>
+                        pulsartig f&uuml;r kurze Zeit verändert. Dies wird treppenf&ouml;rmig wiederholt, so dass mit
+                        jedem neuen Puls ein höheres Membranpotential erreicht wird. <small>Der erste Spannungswert und
+                            die Stufenhöhe können vorab unter &quot;zusätzliche Einstellungen&quot; frei gewählt
+                            werden.</small></li>
+                    <li>Gleichzeitig wird der Strom &uuml;ber die Membran weiterhin gemessen.</li>
+                    <li>Die aus der &quot;IV-Curve&quot;-Messung gewonnen Daten erlauben die Bestimmung einer einfachen
+                        Strom-Spannungs-Beziehung. &quot;Lade&quot; dazu, sobald die Messung nach 60&nbsp;s
+                        abgeschlossen ist, die Daten in das Fenster &quot;Strom-Spannungs-Beziehung&quot;. </li>
                     <li>Das Programm &uuml;bertr&auml;gt jetzt, f&uuml;r jede gemessene Potential-&quot;Stufe&quot;, den
-                        erzeugten Strom (bzw. dessen maximaler Wert) in den Graphen. </li>
+                        erzeugten Strom (bzw. dessen maximalen Wert) in den Graphen. </li>
                     <li>Das Programm bietet weiterhin die M&ouml;glichkeit, eine Kurve &uuml;ber diese – gemessenen -
-                        Werte zu fitten. Dies erm&ouml;glicht auch auf die Einzelkanal-Offenwahrscheinlichkeit des
+                        Werte zu fitten. Dies erm&ouml;glicht auch, auf die Einzelkanal-Offenwahrscheinlichkeit des
                         untersuchten Kanals zu schließen. Dazu musst du zun&auml;chst aussuchen, welcher Kurven-Typ
                         &uuml;ber die Daten gefittet werden soll. W&auml;hle z.&nbsp;B. f&uuml;r die daueroffenen
                         Kaliumkan&auml;le, eine Gerade aus. Fitte jetzt die Daten.</li>
-                    <li>Im rechten Fenster &quot;Offenwahrscheinlichkeit-Spannung-Beziehung&quot; wird jetzt die
+                    <li>Im rechten Fenster &quot;Offenwahrscheinlichkeit-Spannungs-Beziehung&quot; wird jetzt die
                         (maximale*!) Offenwahrscheinlichkeit P<sub>0, max</sub> in Abh&auml;ngigkeit des
                         Membranpotentials dargestellt.</li>
                 </ul>
                 <small>*Tats&auml;chlich ist bei den meisten Ionenkan&auml;len die Einzelkanal-Offenwahrscheinlichkeit
                     nicht nur vom Membranpotential, sondern auch von der Zeit abh&auml;ngig. Man spricht hier von der
-                    <i>gating</i>-Kinetik. Dies wird hier nicht ber&uuml;cksichtigt, es wird nur der maximale Wert
-                    &uuml;ber die Zeit angezeigt.</small>
+                    <i>gating</i>- bzw. Schalt-Kinetik. Dies wird hier nicht ber&uuml;cksichtigt, es wird nur der
+                    maximale Wert &uuml;ber die Zeit angezeigt.</small>
                 </p>
                 <p class="h5">Gestaltung und &copy;</p>
                 <p>
@@ -174,7 +178,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                     Dieses Programm ist Freie Software: Sie k&ouml;nnen es unter den Bedingungen der GNU General Public
                     License, wie von der Free Software Foundation, Version 3 der Lizenz oder (nach Ihrer Wahl) jeder
                     neueren ver&ouml;ffentlichten Version, weiter verteilen und/oder modifizieren.
-                    Der Quellcode ist auf <a href="https://github.com/phys2/teaching-ecg-towel">GitHub</a>
+                    Der Quellcode ist auf <a href="https://github.com/phys2/teaching-voltage-clamp">GitHub</a>
                     verf&uuml;gbar.
                 </p>
                 <p>
@@ -186,39 +190,70 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
             <div class="row">
                 <div class="col-12 col-lg-9">
                     <div class="row mb-1">
-                        <div class="col-12 col-xl-4  mb-1">
+                        <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1">gemes. Mebranpot.:</span>
+                                <span class="input-group-text readOutText" id="basic-addon1">gemessenes
+                                    Membranpot.:</span>
                                 <input type="text" class="form-control" readonly id="potentialOutput">
-                                <span class="input-group-text">mV</span>
+                                <span class="input-group-text readOutText">mV</span>
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1">Offset-Pot.:</span>
+                                <span class="input-group-text readOutText" id="basic-addon1">Offset-Pot.:</span>
                                 <input type="number" class="form-control" value="0" step="0.1"
                                     id="offsetPotentialInput">
-                                <span class="input-group-text">mV</span>
+                                <span class="input-group-text readOutText">mV</span>
                                 <button class="btn btn-outline-secondary" type="button" id="compensate">Komp.</button>
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1">gemes. Strom:</span>
+                                <span class="input-group-text readOutText" id="basic-addon1">gemessener Strom:</span>
                                 <input type="text" class="form-control" id="currentOutput" readonly>
-                                <span class="input-group-text">nA</span>
+                                <span class="input-group-text readOutText">nA</span>
                             </div>
                         </div>
                     </div>
                     <div id="screen" class="ratio ratio-4x3 mb-3">
                         <canvas id="mainCanvas"></canvas>
+                        <div id="ampZoom" class="zoomButtons">
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" id="ampZoomIn"><i
+                                        class="bi bi-chevron-expand"></i></button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" id="ampZoomOut"><i
+                                        class="bi bi-chevron-contract"></i></button>
+                            </div>
+                        </div>
+                        <div id="voltZoom" class="zoomButtons">
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" id="voltZoomIn"><i
+                                        class="bi bi-chevron-expand"></i></button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" id="voltZoomOut"><i
+                                        class="bi bi-chevron-contract"></i></button>
+                            </div>
+                        </div>
                     </div>
                     <div class="row m-0">
                         <div class="card p-0">
                             <div class="card-header">
-                                <i class="bi-water"></i> Badl&ouml;sung (umgibt die Zelle):
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <i class="bi-water"></i> Badl&ouml;sung (umgibt die Zelle):
+                                    </div>
+                                    <div>
+                                        <a class="link-secondary" data-bs-toggle="collapse" href="#collapseBath"
+                                            role="button">
+                                            <i class="bi-caret-up-fill" id="bathCaret"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body collapse show" id="collapseBath">
                                 <div class="row">
                                     <div class="col-auto">
                                         <div class="form-check  mb-1 mt-2">
@@ -381,9 +416,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         <div class="col-6 col-lg-12 mb-lg-1">
                             <div class="card p-0">
                                 <div class="card-header">
-                                    <i class="bi-joystick"></i> Bedienung:
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <i class="bi-joystick"></i> Bedienung:
+                                        </div>
+                                        <div>
+                                            <a class="link-secondary" data-bs-toggle="collapse" href="#collapseControls"
+                                                role="button">
+                                                <i class="bi-caret-up-fill" id="controlsCaret"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body collapse show" id="collapseControls">
                                     <button class="btn btn-sm btn-primary  mb-3" id="reboot"><i
                                             class="bi-arrow-clockwise"></i>
                                         Neustart</button>
@@ -402,7 +447,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                         </select>
                                     </div>
                                     <div class="d-grid gap-3 mb-3">
-                                        <button class="btn btn-primary" id="waterBathButton">Elektrode ins Wasserbad
+                                        <button class="btn btn-primary" id="waterBathButton">Elektrode ins Bad
                                             f&uuml;hren</button>
                                         <button class="btn btn-primary" id="wholeCellButton" disabled>Elektrode in
                                             Zelle einstechen</button>
@@ -502,27 +547,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                 <div class="col-12 col-lg-6 mb-2">
                     <div class="card p-0">
                         <div class="card-header">
-                            <i class="bi-graph-up"></i> Strom-Spannung-Beziehung (IV-Curve)
+                            <i class="bi-graph-up"></i> Strom-Spannungs-Beziehung (IV-Curve)
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-12 col-lg-6">
-                                    <button class="btn btn-primary  mb-3" id="importIvData" disabled>Daten aus
-                                        Spannungsklemme laden</button>
+                            <div class="row mb-2">
+                                <div class="col-12 col-xl-6 mb-0">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary  mb-3" id="importIvData" disabled>
+                                            Daten aus Spannungsklemme laden</button>
+                                    </div>
                                 </div>
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-xl-6">
                                     <div class="input-group">
                                         <select class="form-select" id="selectedModel" name="selectedModel">
                                             <option value="1" selected>Gerade</option>
                                             <option value="2">Hodgkin-Huxley-Modell</option>
                                         </select>
                                         <button class="btn btn-outline-primary" type="button" id="fitCurve"
-                                            disabled>Kurve fitten</button>
+                                            disabled><span class="spinner-grow spinner-grow-sm" role="status"
+                                                id="loadingSpinner"></span> Kurve fitten</button>
                                     </div>
                                 </div>
                             </div>
                             <div id="analysisScreen" class="ratio ratio-4x3 mb-3">
                                 <canvas id="analysisCanvas"></canvas>
+                                <div id="ampZoomIv" class="zoomButtons">
+                                    <div>
+                                        <button type="button" class="btn btn-primary btn-sm" id="ampZoomIvIn"><i
+                                                class="bi bi-chevron-expand"></i></button>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-primary btn-sm" id="ampZoomIvOut"><i
+                                                class="bi bi-chevron-contract"></i></button>
+                                    </div>
+                                </div>
                             </div>
                             <div>Modell f&uuml;r die Strom-Spannung-Kurve: </div>
                             <div id="modelDiv">$$I(U) = a \cdot U + b$$</div>
@@ -534,7 +592,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                 <div class="col-12 col-lg-6">
                     <div class="card p-0">
                         <div class="card-header">
-                            <i class="bi-graph-up"></i> Offenwahrscheinlichkeit-Spannung-Beziehung
+                            <i class="bi-graph-up"></i> Offenwahrscheinlichkeit-Spannungs-Beziehung
                         </div>
                         <div class="card-body">
                             <div id="conductanceScreen" class="ratio ratio-4x3">
