@@ -11521,19 +11521,40 @@ fieldset:disabled .btn {
   border-radius: 2px;
 }
 
-#mainCanvas {
-  height: 100%;
+#ampageCanvas, #voltageCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
 }
 
 #screen {
-  overflow: hidden;
+  overflow: auto;
   border-radius: 5px;
   width: 100%;
+  height: 70vh;
   clear: both;
   border: 1px solid rgba(0, 0, 0, 0.2);
   background-color: white;
   resize: vertical;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: column wrap;
+          flex-flow: column wrap;
+  padding-bottom: 10px;
+}
+
+/* @media screen and (-webkit-min-device-pixel-ratio:0) { 
+    #screen:active {
+        height: 0;
+    }
+  }*/
+.rounded-6 {
+  border-radius: 1rem;
 }
 
 #analysisCanvas {
@@ -11546,20 +11567,41 @@ fieldset:disabled .btn {
   display: none;
 }
 
+#toggleAmpageExpandText, #toggleVoltageExpandText {
+  font-size: 0.75rem;
+  display: none;
+}
+
 #offcanvasHelp {
   width: 700px;
+}
+
+#ampageScreen, #voltageScreen {
+  position: relative;
+  width: 100%;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 0 auto;
+          flex: 1 0 auto;
+  top: 0;
+  left: 0;
+  -webkit-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
+}
+
+.hiddenScreen {
+  -webkit-box-flex: 0 !important;
+      -ms-flex: 0 0 30px !important;
+          flex: 0 0 30px !important;
 }
 
 .zoomButtons {
   width: 100%;
   height: auto;
-}
-
-#voltZoom {
-  top: 50%;
+  overflow: hidden;
 }
 
 #voltZoom, #ampZoom, #ampZoomIv {
+  position: absolute;
   -ms-user-select: none;
       user-select: none;
   -moz-user-select: none;
@@ -11571,12 +11613,26 @@ fieldset:disabled .btn {
   width: auto;
   float: right;
   clear: both;
-  margin-top: 2px;
+  margin-top: 0px;
   margin-right: 2px;
 }
 
+#toggleAmpage, #toggleVoltage {
+  margin-top: 2px;
+}
+
+#screen button:focus {
+  outline: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+#screen button::-moz-focus-inner {
+  border: 0;
+}
+
 .zoomButtons > div > button {
-  padding: 1px 5px;
+  padding: 0px 2px;
 }
 
 #loadingSpinner {

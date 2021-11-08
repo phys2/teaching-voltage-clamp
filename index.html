@@ -21,12 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--CSS-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css?v=261021">
+    <link rel="stylesheet" href="style.css?v=301021">
     <!--JS-->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script type="text/javascript" id="MathJax-script" async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js">
-        </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js">
+    </script>
     <script>
         MathJax = {
             tex: {
@@ -43,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="js/scripts.min.js?v=251021"></script>
+    <script src="js/scripts.min.js?v=291021"></script>
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -71,7 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                 <form class="d-flex">
                     <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#offcanvasHelp">
-                        <i class="bi-info-circle"></i> Erkl&auml;rungen
+                        <i class="bi-info-circle"></i> <span class="d-none d-md-inline">Erkl&auml;rungen</span>
                     </button>
                 </form>
             </div>
@@ -87,6 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                 <p class="h5">Einleitung</p>
                 <p>
                     Ziel dieses Programms und des Praktikumsversuchs &quot;Membranpotential&quot; ist es, zu verstehen,
+                </p>
                 <ul>
                     <li>wie ein Membranpotential durch unterschiedliche intra- und extrazellul&auml;re
                         Ionenkonzentrationen entsteht,</li>
@@ -95,18 +95,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         hervorgerufen werden (und wie daraus das Gleichgewichtspotential einer Ionenspezies
                         experimentell bestimmt werden kann).</li>
                 </ul>
-                Dazu wird ein Versuchsaufbau simuliert, der tats&auml;chlich auch von Elektrophysiologen zur Erforschung
-                von z.&nbsp;B. Ionenkan&auml;len verwendet wird! Grundlage f&uuml;r den Versuch sind Oozyten aus
-                <i>Xenopus laevis</i>, die nach Injektion einer entsprechenden mRNA einen bestimmten Ionenkanal in
-                großer Menge exprimieren. Die Oozyten eignen sich, allein aufgrund ihrer Gr&ouml;ße, sehr gut um direkte
-                Messungen des Membranpotentials durchzuf&uuml;hren. Dazu wird eine, mit einer Salzl&ouml;sung
-                (3&nbsp;M&nbsp;KCl) gef&uuml;llte, spitze Glas-Mikroelektrode bis ins Cytosol der Oozyte gestochen. So
-                kann eine zwischen der Membraninnenseite und der Badl&ouml;sung bestehende Potentialdifferenz, sprich
-                das Membranpotential, gemessen werden.
+                <p>
+                    Dazu wird ein Versuchsaufbau simuliert, der tats&auml;chlich auch von Elektrophysiologen zur
+                    Erforschung
+                    von z.&nbsp;B. Ionenkan&auml;len verwendet wird! Grundlage f&uuml;r den Versuch sind Oozyten aus
+                    <i>Xenopus laevis</i>, die nach Injektion einer entsprechenden mRNA einen bestimmten Ionenkanal in
+                    großer Menge exprimieren. Die Oozyten eignen sich, allein aufgrund ihrer Gr&ouml;ße, sehr gut um
+                    direkte
+                    Messungen des Membranpotentials durchzuf&uuml;hren. Dazu wird eine, mit einer Salzl&ouml;sung
+                    (3&nbsp;M&nbsp;KCl) gef&uuml;llte, spitze Glas-Mikroelektrode bis ins Cytosol der Oozyte gestochen.
+                    So
+                    kann eine zwischen der Membraninnenseite und der Badl&ouml;sung bestehende Potentialdifferenz,
+                    sprich
+                    das Membranpotential, gemessen werden.
                 </p>
                  
                 <p class="h5">Ablauf der Versuchssimulation</p>
-                <p>
+
                 <ul>
                     <li>Als erstes musst du festlegen, welche Oozyten-Charge, sprich welchen exprimierten Ionenkanal du
                         untersuchen willst. W&auml;hle den gew&uuml;nschten Kanal im Fenster &quot;Bedienung&quot; aus.
@@ -138,9 +143,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         </ul>
                     </li>
                 </ul>
-                </p>
+
                 <p class="h5">IV-Curve</p>
-                <p>
                 <ul>
                     <li>Die Zelle wird zun&auml;chst auf V<sub>mem</sub> geklemmt, dann wird das Membranpotential
                         pulsartig f&uuml;r kurze Zeit verändert. Dies wird treppenf&ouml;rmig wiederholt, so dass mit
@@ -162,10 +166,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         (maximale*!) Offenwahrscheinlichkeit P<sub>0, max</sub> in Abh&auml;ngigkeit des
                         Membranpotentials dargestellt.</li>
                 </ul>
-                <small>*Tats&auml;chlich ist bei den meisten Ionenkan&auml;len die Einzelkanal-Offenwahrscheinlichkeit
-                    nicht nur vom Membranpotential, sondern auch von der Zeit abh&auml;ngig. Man spricht hier von der
-                    <i>gating</i>- bzw. Schalt-Kinetik. Dies wird hier nicht ber&uuml;cksichtigt, es wird nur der
-                    maximale Wert &uuml;ber die Zeit angezeigt.</small>
+                <p>
+                    <small>*Tats&auml;chlich ist bei den meisten Ionenkan&auml;len die
+                        Einzelkanal-Offenwahrscheinlichkeit
+                        nicht nur vom Membranpotential, sondern auch von der Zeit abh&auml;ngig. Man spricht hier von
+                        der
+                        <i>gating</i>- bzw. Schalt-Kinetik. Dies wird hier nicht ber&uuml;cksichtigt, es wird nur der
+                        maximale Wert &uuml;ber die Zeit angezeigt.</small>
                 </p>
                 <p class="h5">Gestaltung und &copy;</p>
                 <p>
@@ -192,7 +199,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                     <div class="row mb-1">
                         <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text readOutText" id="basic-addon1">gemessenes
+                                <span class="input-group-text readOutText">gemessenes
                                     Membranpot.:</span>
                                 <input type="text" class="form-control" readonly id="potentialOutput">
                                 <span class="input-group-text readOutText">mV</span>
@@ -200,7 +207,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         </div>
                         <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text readOutText" id="basic-addon1">Offset-Pot.:</span>
+                                <span class="input-group-text readOutText">Offset-Pot.:</span>
                                 <input type="number" class="form-control" value="0" step="0.1"
                                     id="offsetPotentialInput">
                                 <span class="input-group-text readOutText">mV</span>
@@ -209,32 +216,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         </div>
                         <div class="col-12 col-lg-6 col-xl-4  mb-1">
                             <div class="input-group">
-                                <span class="input-group-text readOutText" id="basic-addon1">gemessener Strom:</span>
+                                <span class="input-group-text readOutText">gemessener Strom:</span>
                                 <input type="text" class="form-control" id="currentOutput" readonly>
                                 <span class="input-group-text readOutText">nA</span>
                             </div>
                         </div>
                     </div>
-                    <div id="screen" class="ratio ratio-4x3 mb-3">
-                        <canvas id="mainCanvas"></canvas>
-                        <div id="ampZoom" class="zoomButtons">
-                            <div>
-                                <button type="button" class="btn btn-primary btn-sm" id="ampZoomIn"><i
-                                        class="bi bi-chevron-expand"></i></button>
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-primary btn-sm" id="ampZoomOut"><i
-                                        class="bi bi-chevron-contract"></i></button>
+                    <div id="screen" class="mb-3">
+                        <div id="ampageScreen">
+                            <canvas id="ampageCanvas"></canvas>
+                            <div id="ampZoom" class="zoomButtons">
+                                <div>
+                                    <button type="button" class="btn btn-primary btn-sm mb-2" id="toggleAmpage"
+                                        title="Strom verbergen"><i class="bi bi-arrows-collapse"
+                                            id="toggleAmpageIcon"></i> <span id="toggleAmpageExpandText"> Strom
+                                            zeigen</span></button>
+                                </div>
+                                <div class="ampagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="ampZoomIn"
+                                        title="vergr&ouml;&szlig;ern"><i class="bi bi-chevron-expand"></i></button>
+                                </div>
+                                <div class="ampagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="ampZoomOut"
+                                        title="verkleinern"><i class="bi bi-chevron-contract"></i></button>
+                                </div>
+                                <div class="ampagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="ampOffsetUp"
+                                        title="nach oben schieben"><i class="bi bi-chevron-double-up"></i></button>
+                                </div>
+                                <div class="ampagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="ampOffsetDown"
+                                        title="nach unten schieben"><i class="bi bi-chevron-double-down"></i></button>
+                                </div>
                             </div>
                         </div>
-                        <div id="voltZoom" class="zoomButtons">
-                            <div>
-                                <button type="button" class="btn btn-primary btn-sm" id="voltZoomIn"><i
-                                        class="bi bi-chevron-expand"></i></button>
-                            </div>
-                            <div>
-                                <button type="button" class="btn btn-primary btn-sm" id="voltZoomOut"><i
-                                        class="bi bi-chevron-contract"></i></button>
+                        <div id="voltageScreen">
+                            <canvas id="voltageCanvas"></canvas>
+                            <div id="voltZoom" class="zoomButtons">
+                                <div>
+                                    <button type="button" class="btn btn-primary btn-sm mb-2" id="toggleVoltage"
+                                        title="Potential verbergen"><i class="bi bi-arrows-collapse"
+                                            id="toggleVoltageIcon"></i> <span id="toggleVoltageExpandText"> Potential
+                                            zeigen</span></button>
+                                </div>
+                                <div class="voltagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="voltZoomIn"
+                                        title="vergr&ouml;&szlig;ern"><i class="bi bi-chevron-expand"></i></button>
+                                </div>
+                                <div class="voltagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="voltZoomOut"
+                                        title="verkleinern"><i class="bi bi-chevron-contract"></i></button>
+                                </div>
+                                <div class="voltagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="voltOffsetUp"
+                                        title="nach oben schieben"><i class="bi bi-chevron-double-up"></i></button>
+                                </div>
+                                <div class="voltagePositionControlDiv">
+                                    <button type="button" class="btn btn-primary btn-sm" id="voltOffsetDown"
+                                        title="nach unten schieben"><i class="bi bi-chevron-double-down"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -275,6 +315,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
                                                             <option value="150" selected>150 mM</option>
                                                             <option value="200">200 mM</option>
                                                         </select>
@@ -290,8 +334,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5" selected>5 mM</option>
+                                                            <option value="10">10 mM</option>
                                                             <option value="20">20 mM</option>
                                                             <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
+                                                            <option value="150">150 mM</option>
+                                                            <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -307,6 +355,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="5">5 mM</option>
                                                             <option value="10">10 mM</option>
                                                             <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
+                                                            <option value="150">150 mM</option>
+                                                            <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -319,8 +371,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                         <select class="form-select form-control" id="Cl1" name="Cl1">
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
-                                                            <option value="4">4 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
                                                             <option value="120" selected>120 mM</option>
+                                                            <option value="150">150 mM</option>
                                                             <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
@@ -351,6 +407,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
                                                             <option value="150" selected>150 mM</option>
                                                             <option value="200">200 mM</option>
                                                         </select>
@@ -366,8 +426,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
                                                             <option value="20" selected>20 mM</option>
                                                             <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
+                                                            <option value="150">150 mM</option>
+                                                            <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -383,6 +447,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="5">5 mM</option>
                                                             <option value="10">10 mM</option>
                                                             <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
+                                                            <option value="120">120 mM</option>
+                                                            <option value="150">150 mM</option>
+                                                            <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -395,8 +463,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                         <select class="form-select form-control" id="Cl2" name="Cl2">
                                                             <option value="1">1 mM</option>
                                                             <option value="3">3 mM</option>
-                                                            <option value="4">4 mM</option>
+                                                            <option value="5">5 mM</option>
+                                                            <option value="10">10 mM</option>
+                                                            <option value="20">20 mM</option>
+                                                            <option value="40">40 mM</option>
                                                             <option value="120" selected>120 mM</option>
+                                                            <option value="150">150 mM</option>
                                                             <option value="200">200 mM</option>
                                                         </select>
                                                     </div>
@@ -413,7 +485,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
 
                 <div class="col-12 col-lg-3">
                     <div class="row p-1">
-                        <div class="col-6 col-lg-12 mb-lg-1">
+                        <div class="col-12 col-sm-6 col-lg-12 mb-lg-1">
                             <div class="card p-0">
                                 <div class="card-header">
                                     <div class="d-flex justify-content-between">
@@ -436,14 +508,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                         <label for="selectedChannel" class="form-label">exprimierte Kan&auml;le:
                                         </label>
                                         <select class="form-select mb-3" id="selectedChannel" name="selectedChannel">
-                                            <option value="1" selected>daueroffen f&uuml;r K&#x207A</option>
-                                            <option value="2">K&#x1D62;&#x1D63;</option>
-                                            <option value="3">K&#x1D65; (ohne Kinetik)</option>
-                                            <option value="4">K&#x1D65; </option>
-                                            <option value="5">Na&#x1D65; (ohne Kinetik)</option>
-                                            <option value="6">Na&#x1D65;</option>
-                                            <option value="7">Ca&#x1D65;</option>
-                                            <option value="8">daueroffen f&uuml;r Cl&#x207B;</option>
+                                            <option value="1" selected>unbekannter Kanal 1</option>
+                                            <option value="2">unbekannter Kanal 2</option>
+                                            <option value="3">unbekannter Kanal 3</option>
+                                            <option value="4">unbekannter Kanal 4</option>
+                                            <option value="9">unbekannter Kanal 5</option>
+                                            <option value="5">unbekannter Kanal 6</option>
+                                            <option value="6">unbekannter Kanal 7</option>
+                                            <option value="7">unbekannter Kanal 8</option>
+                                            <option value="8">unbekannter Kanal 9</option>                                            
                                         </select>
                                     </div>
                                     <div class="d-grid gap-3 mb-3">
@@ -535,9 +608,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6 col-lg-12">
+                        <div class="col-12 col-sm-6 col-lg-12">
                             <div class="card">
-                                <img src="ressources/outside_framed.svg" class="card-img-top" id="simImg">
+                                <img src="ressources/outside_framed.svg" class="card-img-top" id="simImg" alt="Oozyte">
                             </div>
                         </div>
                     </div>
@@ -604,6 +677,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
             </div>
         </div>
     </main>
+
+    <div class="modal fade" id="choiceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content rounded-6 shadow">
+            <div class="modal-header border-bottom-0">
+              <h5 class="modal-title">Simulationsmodus w&auml;hlen</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-0">
+              <p>Im Praktikum sollst du einige Aufgaben eigenständig l&ouml;sen. W&auml;hle deshalb zun&auml;hst den verdeckten Modus, damit dir die L&ouml;sungen nicht bereits verraten werden. Zur Nacharbeit kannst du dir dann gerne alle zus&auml;tzlichen Angaben anzeigen lassen.</p>
+            </div>
+            <div class="modal-footer flex-column border-top-0">
+              <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal" id="hiddenModeButton">Verdeckter Modus</button>
+              <button type="button" class="btn btn-lg btn-light w-100 mx-0" data-bs-dismiss="modal" id="openModeButton">L&ouml;sungen anzeigen</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog">
@@ -771,11 +862,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
 
     <footer class="footer mt-auto py-3 bg-light">
         <div class="d-flex justify-content-center">
-            <span class="text-muted">&copy 2021 Pierre Kreins & <a class="link-dark text-decoration-none"
+            <span class="text-muted">&copy; 2021 Pierre Kreins & <a class="link-dark text-decoration-none"
                     href="https://www.physiologie.uni-freiburg.de">Physiologisches Institut</a>,
                 Albert-Ludwigs-Universit&auml;t Freiburg.&nbsp;
             </span><a class="link-dark text-decoration-none" data-bs-toggle="modal" href="#impressumModal">Impressum &
-                Datenschutz</a>.
+                Datenschutz.</a>
         </div>
     </footer>
 </body>
