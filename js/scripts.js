@@ -20,9 +20,12 @@ const dpi = window.devicePixelRatio;
 var maxVolt = 120;
 var maxAmp = 600;
 
+<<<<<<< Updated upstream:js/scripts.js
 var voltOffset = 0;
 var ampOffset = 0;
 
+=======
+>>>>>>> Stashed changes:scripts.js
 var ivMaxAmp = 600;
 var ivY0RelPos = 0.5;
 var ivX0RelPos = 0.5;
@@ -199,8 +202,11 @@ $(function () {
         maxAmp = 600;
         ivMaxAmp = 600;
         maxVolt = 120;
+<<<<<<< Updated upstream:js/scripts.js
         voltOffset = 0;
         ampOffset = 0;
+=======
+>>>>>>> Stashed changes:scripts.js
         canvasPointsMatrix = new Array();
         ivDataMatrix = new Array(600); for (let i = 0; i < 600; ++i) ivDataMatrix[i] = [0, 0];
         ivMaxPointMatrix = new Array();
@@ -215,6 +221,7 @@ $(function () {
             document.getElementById('modelDiv').innerHTML = '<p> $$I(U) = a \\cdot U + b$$ </p>';
         } else if (document.getElementById('selectedModel').value == '2') {
             document.getElementById('modelDiv').innerHTML = '<p> $$I(U) = \\left(a \\cdot U + b\\right) \\cdot \\left( 1- \\frac{1}{ 1+ e^{\\frac{U-c}{d}} } \\right)$$ </p>';
+<<<<<<< Updated upstream:js/scripts.js
         }
         MathJax.typeset([document.getElementById('modelDiv')]);
     });
@@ -344,6 +351,98 @@ $(function () {
     var ro = new ResizeObserver(entries => {
         resizeCanvas();
     });
+=======
+        }
+        MathJax.typeset([document.getElementById('modelDiv')]);
+    });
+
+    $('#ampZoomIn').click(function () {
+        maxAmp = Math.round(maxAmp / 2);
+        paintMainCanvas();
+    });
+    $('#ampZoomOut').click(function () {
+        maxAmp = Math.round(maxAmp * 2);
+        paintMainCanvas();
+    });
+    $('#voltZoomIn').click(function () {
+        maxVolt = Math.round(maxVolt / 2);
+        paintMainCanvas();
+    });
+    $('#voltZoomOut').click(function () {
+        maxVolt = Math.round(maxVolt * 2);
+        paintMainCanvas();
+    });
+    $('#ampZoomIvIn').click(function () {
+        ivMaxAmp = Math.round(ivMaxAmp / 2);
+        paintIvCanvas();
+    });
+    $('#ampZoomIvOut').click(function () {
+        ivMaxAmp = Math.round(ivMaxAmp * 2);
+        paintIvCanvas();
+    });
+
+    ///BEGIN Drag over IV Canvas functions
+
+    function handleMouseDown(e) {
+
+        // set the drag flag
+        isDragging = true;
+    }
+
+    function handleMouseUp(e) {
+
+        // clear the drag flag
+        isDragging = false;
+    }
+
+    function handleMouseOut(e) {
+        // user has left the canvas, so clear the drag flag
+        isDragging = false;
+    }
+    function handleMouseMove(e) {
+        // if the drag flag is set, clear the canvas and draw the image
+        if (isDragging) {
+            var dX = e.movementX;
+            var dY = e.movementY;
+            var canvas = document.getElementById("analysisCanvas");
+            var height = canvas.offsetHeight;
+            var width = canvas.offsetWidth;
+            ivY0RelPos = ivY0RelPos + dY / height;
+            ivX0RelPos = ivX0RelPos + dX / width;
+            paintIvCanvas();
+        }
+    }
+
+    document.getElementById('analysisCanvas').addEventListener('mousedown', handleMouseDown);
+    document.getElementById('analysisCanvas').addEventListener('mousemove', handleMouseMove);
+    document.getElementById('analysisCanvas').addEventListener('mouseup', handleMouseUp);
+    document.getElementById('analysisCanvas').addEventListener('mouseout', handleMouseOut);
+
+    ///END Drag over IV Canvas functions
+
+    var bathCollapsible = document.getElementById('collapseBath');
+    var controlsCollapsible = document.getElementById('collapseControls');
+    var bathCaret = document.getElementById('bathCaret');
+    var controlsCaret = document.getElementById('controlsCaret');
+    bathCollapsible.addEventListener('hidden.bs.collapse', function () {
+        bathCaret.classList.replace('bi-caret-up-fill', 'bi-caret-down-fill');
+    });
+    bathCollapsible.addEventListener('shown.bs.collapse', function () {
+        bathCaret.classList.replace('bi-caret-down-fill', 'bi-caret-up-fill');
+    });
+    controlsCollapsible.addEventListener('hidden.bs.collapse', function () {
+        controlsCaret.classList.replace('bi-caret-up-fill', 'bi-caret-down-fill');
+    });
+    controlsCollapsible.addEventListener('shown.bs.collapse', function () {
+        controlsCaret.classList.replace('bi-caret-down-fill', 'bi-caret-up-fill');
+    });
+
+    var ro = new ResizeObserver(entries => {
+        resizeCanvas();
+    });
+
+    ro.observe(document.getElementById('screen'));
+>>>>>>> Stashed changes:scripts.js
 
     ro.observe(document.getElementById('ampageCanvas'));
     ro.observe(document.getElementById('voltageCanvas'));
@@ -354,7 +453,7 @@ $(function () {
         resizeCanvas();
     });
 
-    $(window).on('load', function () {
+    $(window).on('pageshow', function () {
         var myModal = new bootstrap.Modal(document.getElementById('choiceModal'), {
             keyboard: false
         });
@@ -510,6 +609,18 @@ function paintIvCanvas() {
 
     var canvas = document.getElementById("analysisCanvas");
     var ctx = canvas.getContext("2d");
+<<<<<<< Updated upstream:js/scripts.js
+=======
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpi, dpi);
+    var height = canvas.getBoundingClientRect().height;
+    var width = canvas.getBoundingClientRect().width;
+
+    ctx.fillStyle = "white";
+
+    ctx.fillRect(0, 0, width, height);
+>>>>>>> Stashed changes:scripts.js
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpi, dpi);
@@ -528,6 +639,7 @@ function paintIvCanvas() {
     ctx.beginPath();
 
     ctx.lineWidth = '1.5';
+<<<<<<< Updated upstream:js/scripts.js
     ctx.strokeStyle = 'black';
     ctx.setLineDash([]);
 
@@ -539,6 +651,17 @@ function paintIvCanvas() {
     ctx.stroke();
 
     let ampStep = Math.round(ivMaxAmp / 6);
+=======
+
+    ctx.moveTo(getXValue(width, 0, 200, ivX0RelPos), 0);
+    ctx.lineTo(getXValue(width, 0, 200, ivX0RelPos), height);
+    ctx.moveTo(0, getYValue(height, 0, 2*ivMaxAmp, ivY0RelPos));
+    ctx.lineTo(width, getYValue(height, 0, 2*ivMaxAmp, ivY0RelPos));
+
+    ctx.stroke();
+
+    let ampStep = Math.round(ivMaxAmp/6);
+>>>>>>> Stashed changes:scripts.js
     let voltStep = 10;
 
     ctx.setLineDash([2, 2]);
@@ -554,6 +677,7 @@ function paintIvCanvas() {
     ctx.textAlign = "center";
 
     for (let i = 1; i < 21; i++) {
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(getIvXValue(width, i * voltStep, 200, ivX0RelPos), 0);
         ctx.lineTo(getIvXValue(width, i * voltStep, 200, ivX0RelPos), height - 15);
         let voltString = (i * voltStep).toString();
@@ -569,6 +693,23 @@ function paintIvCanvas() {
         ctx.lineTo(getIvXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height - 15);
         voltString = (-1 * i * voltStep).toString();
         ctx.fillText(voltString, getIvXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height);
+=======
+        ctx.moveTo(getXValue(width, i * voltStep, 200, ivX0RelPos), 0);
+        ctx.lineTo(getXValue(width, i * voltStep, 200, ivX0RelPos), height - 15);
+        let voltString = (i * voltStep).toString();
+
+        ctx.fillText(voltString, getXValue(width, i * voltStep, 200, ivX0RelPos), height);
+
+        if (i % 10 == 0) {
+
+            ctx.fillText('mV', getXValue(width, i * voltStep, 200, ivX0RelPos), height - 12);
+        }
+
+        ctx.moveTo(getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), 0);
+        ctx.lineTo(getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height - 15);
+        voltString = (-1 * i * voltStep).toString();
+        ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200, ivX0RelPos), height);
+>>>>>>> Stashed changes:scripts.js
     }
 
     ctx.strokeStyle = 'black';
@@ -576,6 +717,7 @@ function paintIvCanvas() {
     ctx.textAlign = "left";
 
     for (let i = 1; i < 20; i++) {
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(0, getIvYValue(height, i * ampStep, 2 * ivMaxAmp, ivY0RelPos));
         ctx.lineTo(width, getIvYValue(height, i * ampStep, 2 * ivMaxAmp, ivY0RelPos));
         let ampString = (i * ampStep).toString();
@@ -587,6 +729,19 @@ function paintIvCanvas() {
         ampString = (-1 * i * ampStep).toString();
 
         ctx.fillText(ampString, 0, getIvYValue(height, -1 * i * ampStep, 2 * ivMaxAmp, ivY0RelPos));
+=======
+        ctx.moveTo(0, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        ctx.lineTo(width, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        let ampString = (i * ampStep).toString();
+        if (i % 6 == 0) { ampString += ' nA' }
+        ctx.fillText(ampString, 0, getYValue(height, i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+
+        ctx.moveTo(0, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        ctx.lineTo(width, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+        ampString = (-1 * i * ampStep).toString();
+
+        ctx.fillText(ampString, 0, getYValue(height, -1 * i * ampStep, 2*ivMaxAmp, ivY0RelPos));
+>>>>>>> Stashed changes:scripts.js
 
     }
 
@@ -596,7 +751,11 @@ function paintIvCanvas() {
     for (let averagedPoint of ivMaxPointMatrix) {
         ctx.beginPath();
         ctx.fillStyle = "black";
+<<<<<<< Updated upstream:js/scripts.js
         ctx.arc(getIvXValue(width, averagedPoint.referencePotential, 200, ivX0RelPos), getIvYValue(height, averagedPoint.averageCurrent, 2 * ivMaxAmp, ivY0RelPos), 4, 0, Math.PI * 2, false);
+=======
+        ctx.arc(getXValue(width, averagedPoint.referencePotential, 200, ivX0RelPos), getYValue(height, averagedPoint.averageCurrent, 2*ivMaxAmp, ivY0RelPos), 4, 0, Math.PI * 2, false);
+>>>>>>> Stashed changes:scripts.js
         ctx.fill();
     }
     //fitted curve
@@ -606,9 +765,15 @@ function paintIvCanvas() {
         ctx.setLineDash([]);
         ctx.strokeStyle = 'green';
         ctx.lineWidth = '1.5';
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(getIvXValue(width, ivFittedCurve.xValues[0], 200, ivX0RelPos), getIvYValue(height, ivFittedCurve.yValues[0], 2 * ivMaxAmp, ivY0RelPos));
         for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
             ctx.lineTo(getIvXValue(width, ivFittedCurve.xValues[i], 200, ivX0RelPos), getIvYValue(height, ivFittedCurve.yValues[i], 2 * ivMaxAmp, ivY0RelPos));
+=======
+        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200, ivX0RelPos), getYValue(height, ivFittedCurve.yValues[0], 2*ivMaxAmp, ivY0RelPos));
+        for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
+            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200, ivX0RelPos), getYValue(height, ivFittedCurve.yValues[i], 2*ivMaxAmp, ivY0RelPos));
+>>>>>>> Stashed changes:scripts.js
         }
         ctx.stroke();
 
@@ -625,12 +790,21 @@ function paintIvCanvas() {
 
         ctx.beginPath();
         ctx.lineWidth = '1.5';
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(0, getIvYValue(height, 0, 1.5, 0.833));
         ctx.lineTo(width - 30, getIvYValue(height, 0, 1.5, 0.833));
         ctx.moveTo(0, getIvYValue(height, 1, 1.5, 0.833));
         ctx.lineTo(width - 30, getIvYValue(height, 1, 1.5, 0.833));
         ctx.moveTo(getIvXValue(width, 0, 200), getIvYValue(height, 1.03, 1.5, 0.833));
         ctx.lineTo(getIvXValue(width, 0, 200), getIvYValue(height, -0.03, 1.5, 0.833));
+=======
+        ctx.moveTo(0, getYValue(height, 0, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 1, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 1, 1.5, 0.833));
+        ctx.moveTo(getXValue(width, 0, 200), getYValue(height, 1.03, 1.5, 0.833));
+        ctx.lineTo(getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 0.833));
+>>>>>>> Stashed changes:scripts.js
         ctx.stroke();
 
         ctx.beginPath();
@@ -642,6 +816,7 @@ function paintIvCanvas() {
         ctx.textBaseline = 'top';
         ctx.textAlign = "center";
 
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(0, getIvYValue(height, 0.25, 1.5, 0.833));
         ctx.lineTo(width - 30, getIvYValue(height, 0.25, 1.5, 0.833));
         ctx.moveTo(0, getIvYValue(height, 0.5, 1.5, 0.833));
@@ -654,6 +829,20 @@ function paintIvCanvas() {
         for (let i = 1; i < 10; i++) {
             ctx.moveTo(getIvXValue(width, i * voltStep, 200), getIvYValue(height, 1.03, 1.5, 0.833));
             ctx.lineTo(getIvXValue(width, i * voltStep, 200), getIvYValue(height, -0.03, 1.5, 0.833));
+=======
+        ctx.moveTo(0, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.moveTo(0, getYValue(height, 0.75, 1.5, 0.833));
+        ctx.lineTo(width - 30, getYValue(height, 0.75, 1.5, 0.833));
+
+        ctx.fillText('0', getXValue(width, 0, 200), getYValue(height, -0.03, 1.5, 0.833));
+
+        for (let i = 1; i < 10; i++) {
+            ctx.moveTo(getXValue(width, i * voltStep, 200), getYValue(height, 1.03, 1.5, 0.833));
+            ctx.lineTo(getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
+>>>>>>> Stashed changes:scripts.js
             let voltString = (i * voltStep).toString();
 
             if (i == 9) {
@@ -661,6 +850,7 @@ function paintIvCanvas() {
                 voltString += ' mV'
             }
 
+<<<<<<< Updated upstream:js/scripts.js
             ctx.fillText(voltString, getIvXValue(width, i * voltStep, 200), getIvYValue(height, -0.03, 1.5, 0.833));
 
 
@@ -669,17 +859,35 @@ function paintIvCanvas() {
             ctx.lineTo(getIvXValue(width, -1 * i * voltStep, 200), getIvYValue(height, -0.03, 1.5, 0.833));
             voltString = (-1 * i * voltStep).toString();
             ctx.fillText(voltString, getIvXValue(width, -1 * i * voltStep, 200), getIvYValue(height, -0.03, 1.5, 0.833));
+=======
+            ctx.fillText(voltString, getXValue(width, i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
+
+
+
+            ctx.moveTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, 1.03, 1.5, 0.833));
+            ctx.lineTo(getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
+            voltString = (-1 * i * voltStep).toString();
+            ctx.fillText(voltString, getXValue(width, -1 * i * voltStep, 200), getYValue(height, -0.03, 1.5, 0.833));
+>>>>>>> Stashed changes:scripts.js
         }
         ctx.stroke();
 
         ctx.font = "bold 11px Arial";
         ctx.textAlign = "right";
         ctx.textBaseline = 'middle';
+<<<<<<< Updated upstream:js/scripts.js
         ctx.fillText('0', width, getIvYValue(height, 0, 1.5, 0.833));
         ctx.fillText('0.25', width, getIvYValue(height, 0.25, 1.5, 0.833));
         ctx.fillText('0.5', width, getIvYValue(height, 0.5, 1.5, 0.833));
         ctx.fillText('0.75', width, getIvYValue(height, 0.75, 1.5, 0.833));
         ctx.fillText('1', width, getIvYValue(height, 1, 1.5, 0.833));
+=======
+        ctx.fillText('0', width, getYValue(height, 0, 1.5, 0.833));
+        ctx.fillText('0.25', width, getYValue(height, 0.25, 1.5, 0.833));
+        ctx.fillText('0.5', width, getYValue(height, 0.5, 1.5, 0.833));
+        ctx.fillText('0.75', width, getYValue(height, 0.75, 1.5, 0.833));
+        ctx.fillText('1', width, getYValue(height, 1, 1.5, 0.833));
+>>>>>>> Stashed changes:scripts.js
 
         ctx.beginPath();
 
@@ -687,19 +895,33 @@ function paintIvCanvas() {
         ctx.strokeStyle = 'blue';
         ctx.setLineDash([]);
         ctx.lineWidth = '2.5';
+<<<<<<< Updated upstream:js/scripts.js
         ctx.moveTo(getIvXValue(width, ivFittedCurve.xValues[0], 200), getIvYValue(height, ivFittedCurve.condValues[0], 1.5, 0.833));
         for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
             ctx.lineTo(getIvXValue(width, ivFittedCurve.xValues[i], 200), getIvYValue(height, ivFittedCurve.condValues[i], 1.5, 0.833));
+=======
+        ctx.moveTo(getXValue(width, ivFittedCurve.xValues[0], 200), getYValue(height, ivFittedCurve.condValues[0], 1.5, 0.833));
+        for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
+            ctx.lineTo(getXValue(width, ivFittedCurve.xValues[i], 200), getYValue(height, ivFittedCurve.condValues[i], 1.5, 0.833));
+>>>>>>> Stashed changes:scripts.js
         }
         ctx.stroke();
     }
 }
 
+<<<<<<< Updated upstream:js/scripts.js
 function getIvXValue(width, x, amp, yShiftFactor = 0.5) {
     return Math.round((x / amp) * (width - 30) + Math.round((width - 30) * yShiftFactor) + 15);
 }
 
 function getIvYValue(height, y, amp, yShiftFactor = 0.5) {
+=======
+function getXValue(width, x, amp, yShiftFactor = 0.5) {
+    return Math.round((x / amp) * (width - 30) + Math.round((width - 30) * yShiftFactor) + 15);
+}
+
+function getYValue(height, y, amp, yShiftFactor = 0.5) {
+>>>>>>> Stashed changes:scripts.js
     return Math.round(-1 * (y / amp) * (height - 30) + Math.round((height - 30) * yShiftFactor) + 15);
 }
 
@@ -930,7 +1152,11 @@ function getPermeabilities(potential, timeAtPotential) {
     switch (selectedChannel) {
         case '1':
             return [0, 4, 0, 0];
+<<<<<<< Updated upstream:js/scripts.js
             break;
+=======
+            break;        
+>>>>>>> Stashed changes:scripts.js
         case '2'://kv
             var slope = 4;
             var vhalf = -25;
@@ -1009,9 +1235,12 @@ function getPermeabilities(potential, timeAtPotential) {
         case '8':
             return [0, 0, 0, 1];
             break;
+<<<<<<< Updated upstream:js/scripts.js
         case '9':
             return [2, 0, 0, 0];
             break;
+=======
+>>>>>>> Stashed changes:scripts.js
     }
 
 
@@ -1054,6 +1283,7 @@ function paintMainCanvas() {
     drawGrid('ampageCanvas', maxAmp, ' mA', ampOffset);
     drawGrid('voltageCanvas', maxVolt, ' mV', voltOffset);
     if (canvasPointsMatrix.length > 1) {
+<<<<<<< Updated upstream:js/scripts.js
         drawRecord('ampageCanvas', maxAmp, ampOffset, 'black', 2);
         drawRecord('voltageCanvas', maxVolt, voltOffset, 'red', 1);
     }
@@ -1062,6 +1292,39 @@ function paintMainCanvas() {
 function drawRecord(canvasName, halfAmplitude, offset, color, a) { // a  = 1 if potential, 2 if current  
     var canvas = document.getElementById(canvasName);
     var ctx = canvas.getContext("2d");
+=======
+        var canvas = document.getElementById("mainCanvas");
+        var ctx = canvas.getContext("2d");
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpi, dpi);
+        ctx.lineWidth = '2';
+        ctx.setLineDash([]);
+        var height = canvas.getBoundingClientRect().height;
+        var width = canvas.getBoundingClientRect().width;
+
+        var yStep = (height / 4);
+
+        var time = canvasPointsMatrix[0][0];
+        var potential = canvasPointsMatrix[0][1];
+
+        var xPosition = Math.round((time / 60) * width);
+        var yPosition = Math.round(3 * yStep - (potential / maxVolt) * (yStep - 20));
+        ctx.beginPath();
+        ctx.strokeStyle = 'red';
+        ctx.setLineDash([]);
+        ctx.moveTo(xPosition, yPosition);
+
+        for (let i = 1; i < canvasPointsMatrix.length; i++) {
+            time = canvasPointsMatrix[i][0];
+            potential = canvasPointsMatrix[i][1];
+
+            xPosition = Math.round((time / 60) * width);
+            yPosition = Math.round(3 * yStep - (potential / maxVolt) * (yStep - 20));
+            ctx.lineTo(xPosition, yPosition);
+        }
+        ctx.stroke();
+>>>>>>> Stashed changes:scripts.js
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpi, dpi);
@@ -1074,6 +1337,7 @@ function drawRecord(canvasName, halfAmplitude, offset, color, a) { // a  = 1 if 
     ctx.strokeStyle = color;
     var topMargin = 15;
 
+<<<<<<< Updated upstream:js/scripts.js
     var time = canvasPointsMatrix[0][0];
     var value = canvasPointsMatrix[0][a];
 
@@ -1090,6 +1354,17 @@ function drawRecord(canvasName, halfAmplitude, offset, color, a) { // a  = 1 if 
         xPosition = getRecordXValue(time, 60, width);
         yPosition = getRecordYValue(value, halfAmplitude, offset, height, topMargin);
         ctx.lineTo(xPosition, yPosition);
+=======
+        for (let i = 1; i < canvasPointsMatrix.length; i++) {
+            time = canvasPointsMatrix[i][0];
+            current = canvasPointsMatrix[i][2];
+
+            xPosition = Math.round((time / 60) * width);
+            yPosition = Math.round(yStep - (current / maxAmp) * (yStep - 20));
+            ctx.lineTo(xPosition, yPosition);
+        }
+        ctx.stroke();
+>>>>>>> Stashed changes:scripts.js
     }
     ctx.stroke();
 }
@@ -1098,12 +1373,17 @@ function getRecordXValue(time, maxtime, width) {
     return Math.round((time / maxtime) * width);
 }
 
+<<<<<<< Updated upstream:js/scripts.js
 function getRecordYValue(value, halfAmplitude, offset, height, topMargin) {
     return Math.round(height / 2 - (value / halfAmplitude) * (height / 2 - topMargin) + offset * ((height - 2 * topMargin) / 12));
 }
 
 function drawGrid(canvasName, halfAmplitude, unit, offset) {
     var canvas = document.getElementById(canvasName);
+=======
+function drawGrid() {
+    var canvas = document.getElementById("mainCanvas");
+>>>>>>> Stashed changes:scripts.js
     var ctx = canvas.getContext("2d");
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1114,6 +1394,7 @@ function drawGrid(canvasName, halfAmplitude, unit, offset) {
 
     ctx.clearRect(0, 0, width, height);
 
+<<<<<<< Updated upstream:js/scripts.js
     var xStep = width / 60; //width of 1 second
 
     var ordinateStep = halfAmplitude / 6; //difference in ordinate value between two horizontal lines
@@ -1127,6 +1408,34 @@ function drawGrid(canvasName, halfAmplitude, unit, offset) {
     ctx.beginPath();
     ctx.moveTo(xStep, 12);
     ctx.lineTo(xStep, height - 12);
+=======
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = "1.25";
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    var yStep = Math.round(height / 4);
+    var xStep = width / 60;
+
+    ctx.moveTo(0, yStep);
+    ctx.lineTo(width, yStep);
+    ctx.moveTo(0, 3 * yStep);
+    ctx.lineTo(width, 3 * yStep);
+    var yUp = yStep - 3;
+    var yDown = yStep + 3;
+    for (let z = 1; z < 60; z++) {
+        var x = Math.round(z * xStep);
+        ctx.moveTo(x, yUp);
+        ctx.lineTo(x, yDown);
+    }
+    yUp = 3 * yStep - 3;
+    yDown = 3 * yStep + 3;
+    for (let z = 1; z < 60; z++) {
+        var x = Math.round(z * xStep);
+        ctx.moveTo(x, yUp);
+        ctx.lineTo(x, yDown);
+    }
+>>>>>>> Stashed changes:scripts.js
     ctx.stroke();
 
     //draw horizontal lines
@@ -1165,12 +1474,27 @@ function drawGrid(canvasName, halfAmplitude, unit, offset) {
             ctx.setLineDash([4, 4]);
             ctx.strokeStyle = "#8f8f8f";
 
+<<<<<<< Updated upstream:js/scripts.js
 
 
             ctx.beginPath();
             ctx.moveTo(0, yLine);
             ctx.lineTo(width, yLine);
             ctx.stroke();
+=======
+    ctx.beginPath();
+    ctx.lineWidth = "1";
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "#8f8f8f";
+
+    var deltaY = (yStep - 15) / 6;
+    var voltStep = Math.round(maxVolt / 6);
+    var ampStep = Math.round(maxAmp / 6);
+
+    ctx.font = "13px Arial";
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = "left";
+>>>>>>> Stashed changes:scripts.js
 
             ctx.font = "13px Arial";
             ctx.textBaseline = 'middle';
@@ -1182,9 +1506,76 @@ function drawGrid(canvasName, halfAmplitude, unit, offset) {
             }
             ctx.fillText(ordinateText, 23, yLine);
         }
+<<<<<<< Updated upstream:js/scripts.js
+=======
+        var negVoltage = Math.round(-1 * z * voltStep).toString();
+        var negAmpage = Math.round(-1 * z * ampStep).toString();
+
+        ctx.fillText(voltage, 23, 3 * yStep - y);
+        ctx.fillText(negVoltage, 23, 3 * yStep + y);
+        ctx.fillText(ampage, 23, yStep - y);
+        ctx.fillText(negAmpage, 23, yStep + y);
+
+
+        ctx.moveTo(0, yStep + y);
+        ctx.lineTo(width, yStep + y);
+        ctx.moveTo(0, yStep - y);
+        ctx.lineTo(width, yStep - y);
+        ctx.moveTo(0, 3 * yStep + y);
+        ctx.lineTo(width, 3 * yStep + y);
+        ctx.moveTo(0, 3 * yStep - y);
+        ctx.lineTo(width, 3 * yStep - y);
+>>>>>>> Stashed changes:scripts.js
     }
 }
 
+function getJunctionPotential() {
+    var extracellularConcentrations = [getSelectedIon("Na"), getSelectedIon("K"), getSelectedIon("Ca"), getSelectedIon("Cl")];
+
+    for (let junctionPotential of junctionPotentials) {
+        if (junctionPotential.extracellularConcentrations[0] == extracellularConcentrations[0]
+            && junctionPotential.extracellularConcentrations[1] == extracellularConcentrations[1]
+            && junctionPotential.extracellularConcentrations[2] == extracellularConcentrations[2]
+            && junctionPotential.extracellularConcentrations[3] == extracellularConcentrations[3]) {
+            return junctionPotential.potential;
+        }
+    }
+    return calculateJunctionPotential(extracellularConcentrations);
+}
+
+<<<<<<< Updated upstream:js/scripts.js
+function calculateJunctionPotential(extracellularConcentrations) {
+    var junctionPotential = new Object();
+
+    var pipetteConcentrations = [0, 3000, 0, 3000];
+    var valencies = [1, 1, 2, -1];
+    var mobilities = [0.682, 1, 0.81, 1.0388];
+    var rtfConstant = 61.5;
+=======
+    ctx.font = "13px Arial";
+    ctx.textBaseline = 'top';
+    ctx.textAlign = "right";
+
+    ctx.beginPath();
+    ctx.fillText("60 s", width - 3, yStep + 7);
+    ctx.fillText("60 s", width - 3, 3 * yStep + 7);
+    ctx.stroke();
+>>>>>>> Stashed changes:scripts.js
+
+    var sum1 = 0;
+    var sum2 = 0;
+    var sum3 = 0;
+    var sum4 = 0;
+
+    for (let i = 0; i < 4; i++) {
+        sum1 += valencies[i] * valencies[i] * mobilities[i] * pipetteConcentrations[i];
+        sum2 += valencies[i] * valencies[i] * mobilities[i] * extracellularConcentrations[i];
+        sum3 += valencies[i] * mobilities[i] * (extracellularConcentrations[i] - pipetteConcentrations[i]);
+        sum4 += valencies[i] * valencies[i] * mobilities[i] * (extracellularConcentrations[i] - pipetteConcentrations[i]);
+    }
+
+<<<<<<< Updated upstream:js/scripts.js
+=======
 function getJunctionPotential() {
     var extracellularConcentrations = [getSelectedIon("Na"), getSelectedIon("K"), getSelectedIon("Ca"), getSelectedIon("Cl")];
 
@@ -1219,6 +1610,7 @@ function calculateJunctionPotential(extracellularConcentrations) {
         sum4 += valencies[i] * valencies[i] * mobilities[i] * (extracellularConcentrations[i] - pipetteConcentrations[i]);
     }
 
+>>>>>>> Stashed changes:scripts.js
     junctionPotential.potential = rtfConstant * (sum3 / sum4) + Math.log(sum1 / sum2);
 
     junctionPotential.extracellularConcentrations = extracellularConcentrations;
@@ -1239,10 +1631,16 @@ function average(nums) {
 }
 
 function resizeCanvas() {
+<<<<<<< Updated upstream:js/scripts.js
     var canvas = document.getElementById("ampageCanvas");
     canvas.width = dpi * canvas.offsetWidth;
     canvas.height = dpi * canvas.offsetHeight;
     canvas = document.getElementById("voltageCanvas");
+=======
+    var canvas = document.getElementById("mainCanvas");
+    var ctx = canvas.getContext("2d");
+
+>>>>>>> Stashed changes:scripts.js
     canvas.width = dpi * canvas.offsetWidth;
     canvas.height = dpi * canvas.offsetHeight;
     canvas = document.getElementById("analysisCanvas");
@@ -1251,9 +1649,15 @@ function resizeCanvas() {
     canvas = document.getElementById("conductanceCanvas");
     canvas.width = dpi * canvas.offsetWidth;
     canvas.height = dpi * canvas.offsetHeight;
+<<<<<<< Updated upstream:js/scripts.js
 
     paintMainCanvas();
 
+=======
+    if (typeof canvasPointsMatrix !== 'undefined') {
+        paintMainCanvas();
+    }
+>>>>>>> Stashed changes:scripts.js
     if (typeof ivMaxPointMatrix !== 'undefined') {
         if (ivMaxPointMatrix.length > 0) {
             paintIvCanvas();
