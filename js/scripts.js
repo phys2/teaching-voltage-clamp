@@ -354,13 +354,14 @@ $(function () {
         resizeCanvas();
     });
 
-    $(document).on('pageshow', function () {
+    $(document).ready(function () {
         var myModal = new bootstrap.Modal(document.getElementById('choiceModal'), {
             keyboard: false
         });
         myModal.show();
     });
 
+    window.onunload = function(){}; //suppress bfcache on firefox
 
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
