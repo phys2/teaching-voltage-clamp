@@ -354,7 +354,7 @@ $(function () {
         resizeCanvas();
     });
 
-    $(window).on('load', function () {
+    $(document).on('pageshow', function () {
         var myModal = new bootstrap.Modal(document.getElementById('choiceModal'), {
             keyboard: false
         });
