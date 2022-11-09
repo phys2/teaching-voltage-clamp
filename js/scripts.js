@@ -264,7 +264,7 @@ $(function () {
         $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option> <option value="2">K&#x1D62;&#x1D63;</option> <option value="3">K&#x1D65; (nicht inaktivierend)</option> <option value="4"> K&#x1D65; (inaktivierend)</option>  <option value="9">daueroffen f&uuml;r Na&#x207A;</option> <option value="5">Na&#x1D65; (nicht inaktivierend)</option> <option value="6">Na&#x1D65; (inaktivierend)</option> <option value="7">Ca&#x1D65;</option> <option value="8">daueroffen f&uuml;r Cl&#x207B;</option>');
     });
     $('#hiddenModeButton').click(function () {
-        $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option> <option value="2">unbekannter Kanal 2</option><option value="3">unbekannter Kanal 3</option> < option value = "4" >unbekannter Kanal 4</option >  <option value="9">unbekannter Kanal 5</option> <option value="5">unbekannter Kanal 6</option> <option value="6">unbekannter Kanal 7</option> <option value="7">unbekannter Kanal 8</option> <option value="8">unbekannter Kanal 9</option>');
+        $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option> <option value="2">unbekannter Kanal 2</option> <option value="3">unbekannter Kanal 3</option> <option value="4">unbekannter Kanal 4</option>  <option value="9">unbekannter Kanal 5</option> <option value="5">unbekannter Kanal 6</option> <option value="6">unbekannter Kanal 7</option> <option value="7">unbekannter Kanal 8</option> <option value="8">unbekannter Kanal 9</option>');
     });
 
     $('#toggleAmpage').click(function () {
@@ -354,14 +354,13 @@ $(function () {
         resizeCanvas();
     });
 
-    $(document).ready(function () {
+    $(window).on('pageshow', function () {
         var myModal = new bootstrap.Modal(document.getElementById('choiceModal'), {
             keyboard: false
         });
         myModal.show();
     });
 
-    window.onunload = function(){}; //suppress bfcache on firefox
 
 
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
