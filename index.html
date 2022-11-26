@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="js/scripts.min.js?v=300422"></script>
+    <script src="js/scripts.minjs?v=261122"></script>
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -131,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         angezeigt wird!</li>
                     <li>Zur eigentlichen Aufzeichnung der Messung kannst du zwischen 3 Modi w&auml;hlen:
                         <ul>
-                            <li>Der Modus &quot;nur messen&quot; erlaubt dir z.&nbsp;B. aufzuzeichnen, was beim Wechsel
+                            <li>Der Modus &quot;nur aufzeichnen&quot; erlaubt dir z.&nbsp;B. aufzuzeichnen, was beim Wechsel
                                 auf  unterschiedliche Badl&ouml;sungen passiert.</li>
                             <li>Ganz anders funktioniert die Spannungsklemme: Hierbei wird das Membranpotential nicht
                                 mehr gemessen, sondern aktiv durch die Elektrode vorgegeben. Gleichzeitig wird aber
@@ -350,15 +350,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                         class="col-auto col-form-label">Ca<sup>2+</sup>:</label>
                                                     <div class="col-auto">
                                                         <select class="form-select form-control" id="Ca1" name="Ca1">
+                                                            <option value="0.001">0.001 mM</option>
+                                                            <option value="0.1">0.1 mM</option>
                                                             <option value="1" selected>1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
-                                                            <option value="10">10 mM</option>
-                                                            <option value="20">20 mM</option>
-                                                            <option value="40">40 mM</option>
-                                                            <option value="120">120 mM</option>
-                                                            <option value="150">150 mM</option>
-                                                            <option value="200">200 mM</option>
+                                                            <option value="10">10 mM</option>                                                            
+                                                            <option value="100">100 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -442,15 +440,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                         class="col-auto col-form-label">Ca<sup>2+</sup>:</label>
                                                     <div class="col-auto">
                                                         <select class="form-select form-control" id="Ca2" name="Ca2">
+                                                            <option value="0.001">0.001 mM</option>
+                                                            <option value="0.1">0.1 mM</option>
                                                             <option value="1" selected>1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
-                                                            <option value="10">10 mM</option>
-                                                            <option value="20">20 mM</option>
-                                                            <option value="40">40 mM</option>
-                                                            <option value="120">120 mM</option>
-                                                            <option value="150">150 mM</option>
-                                                            <option value="200">200 mM</option>
+                                                            <option value="10">10 mM</option>                                                            
+                                                            <option value="100">100 mM</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -512,11 +508,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                             <option value="2">unbekannter Kanal 2</option>
                                             <option value="3">unbekannter Kanal 3</option>
                                             <option value="4">unbekannter Kanal 4</option>
-                                            <option value="9">unbekannter Kanal 5</option>
-                                            <option value="5">unbekannter Kanal 6</option>
-                                            <option value="6">unbekannter Kanal 7</option>
-                                            <option value="7">unbekannter Kanal 8</option>
-                                            <option value="8">unbekannter Kanal 9</option>                                            
+                                            <option value="5">unbekannter Kanal 5</option>
+                                            <option value="6">unbekannter Kanal 6</option>
+                                            <option value="7">unbekannter Kanal 7</option>
+                                            <option value="8">unbekannter Kanal 8</option>
+                                            <option value="9">unbekannter Kanal 9</option>
+                                            <option value="10">unbekannter Kanal 10</option>                                              
                                         </select>
                                     </div>
                                     <div class="d-grid gap-3 mb-3">
@@ -530,7 +527,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                         <input class="form-check-input" type="radio" name="recordingMode"
                                             id="recordingMode1" value='1' checked>
                                         <label class="form-check-label" for="recordingMode1">
-                                            nur messen <span class="badge rounded-pill bg-secondary"
+                                            nur aufzeichnen <span class="badge rounded-pill bg-secondary"
                                                 data-bs-toggle="tooltip" data-bs-placement="bottom"
                                                 title="Spannung und Strom werden gemessen">?</span>
                                         </label>

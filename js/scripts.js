@@ -94,18 +94,18 @@ $(function () {
     $("#startRecording").click(function () {
         $('#startRecording').attr("disabled", 'disabled');
         if (patchStatus == 2) {
-
+            $('input[name=recordingMode]').attr("disabled", 'disabled');
             $('#stopRecording').removeAttr("disabled");
             clearInterval(wholeCellTimer);
             canvasPointsMatrix.length = 0
-            $('#V_mem').attr("readonly", 'readonly');
-            $('#v_0Input').attr("readonly", 'readonly');
-            $('#deltaVInput').attr("readonly", 'readonly');
+            
             if ($('input[name=recordingMode]:checked').val() == '1') {
                 //passive
                 patchStatus = 3;
                 passiveTimer = setInterval(recordPassive, deltaT);
-
+                $('#V_mem').attr("readonly", 'readonly');
+                $('#v_0Input').attr("readonly", 'readonly');
+                $('#deltaVInput').attr("readonly", 'readonly');
             } else if ($('input[name=recordingMode]:checked').val() == '2') {
                 //voltage
                 patchStatus = 4;
@@ -115,7 +115,9 @@ $(function () {
                 //ivcurve
                 patchStatus = 5;
                 ivCurveTimer = setInterval(recordIvCurve, deltaT);
-
+                $('#V_mem').attr("readonly", 'readonly');
+                $('#v_0Input').attr("readonly", 'readonly');
+                $('#deltaVInput').attr("readonly", 'readonly');
             }
         } else if (patchStatus == 3) {
             $('#stopRecording').removeAttr("disabled");
@@ -174,6 +176,7 @@ $(function () {
         ivCurveCounter = 0;
         voltageClampCounter = 0;
         passiveCounter = 0;
+        $('input[name=recordingMode]').removeAttr("disabled");
         $('#startRecording').attr("disabled", 'disabled');
         $('#stopRecording').attr("disabled", 'disabled');
         $('#wholeCellButton').attr("disabled", 'disabled');
@@ -193,6 +196,14 @@ $(function () {
         $('#resultBody').html('');
         $('#resultHeader').hide();
         $('#resultBody').hide();
+        $('#Na1').val('150');
+        $('#K1').val('5');
+        $('#Ca1').val('1');
+        $('#Cl1').val('120');
+        $('#Na2').val('150');
+        $('#K2').val('20');
+        $('#Ca2').val('1');
+        $('#Cl2').val('120');
         $("#simImg").attr("src", 'ressources/outside_framed.svg');
         junctionPotentials = new Array();
         updateOutputFieldsCounter = 0;
@@ -261,10 +272,10 @@ $(function () {
     });
 
     $('#openModeButton').click(function () {
-        $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option> <option value="2">K&#x1D62;&#x1D63;</option> <option value="3">K&#x1D65; (nicht inaktivierend)</option> <option value="4"> K&#x1D65; (inaktivierend)</option>  <option value="9">daueroffen f&uuml;r Na&#x207A;</option> <option value="5">Na&#x1D65; (nicht inaktivierend)</option> <option value="6">Na&#x1D65; (inaktivierend)</option> <option value="7">Ca&#x1D65;</option> <option value="8">daueroffen f&uuml;r Cl&#x207B;</option>');
+        $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option><option value="2">K&#x1D62;&#x1D63;</option><option value="3">K&#x1D65; (nicht inaktivierend)</option><option value="4">Na&#x1D65; (nicht inaktivierend)</option><option value="5">daueroffen f&uuml;r Na&#x207A;</option><option value="6">daueroffen f&uuml;r Cl&#x207B;</option><option value="7">Ca&#x1D65;</option><option value="8"> K&#x1D65; (inaktivierend)</option><option value="9">Na&#x1D65; (inaktivierend)</option><option value="10">nicht-selektiver Kationenkanal</option>');
     });
     $('#hiddenModeButton').click(function () {
-        $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option> <option value="2">unbekannter Kanal 2</option> <option value="3">unbekannter Kanal 3</option> <option value="4">unbekannter Kanal 4</option>  <option value="9">unbekannter Kanal 5</option> <option value="5">unbekannter Kanal 6</option> <option value="6">unbekannter Kanal 7</option> <option value="7">unbekannter Kanal 8</option> <option value="8">unbekannter Kanal 9</option>');
+        $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option><option value="2">unbekannter Kanal 2</option><option value="3">unbekannter Kanal 3</option><option value="4">unbekannter Kanal 4</option><option value="5">unbekannter Kanal 5</option><option value="6">unbekannter Kanal 6</option><option value="7">unbekannter Kanal 7</option><option value="8">unbekannter Kanal 8</option><option value="9">unbekannter Kanal 9</option><option value="10">unbekannter Kanal 10</option>');
     });
 
     $('#toggleAmpage').click(function () {
@@ -621,6 +632,8 @@ function paintIvCanvas() {
         height = canvas.getBoundingClientRect().height;
         width = canvas.getBoundingClientRect().width;
 
+        ctx.clearRect(0, 0, width, height);
+
         ctx.strokeStyle = 'black';
 
         ctx.beginPath();
@@ -703,8 +716,15 @@ function getIvYValue(height, y, amp, yShiftFactor = 0.5) {
     return Math.round(-1 * (y / amp) * (height - 30) + Math.round((height - 30) * yShiftFactor) + 15);
 }
 
-function recordPassive() {
-    var time = timerCounterToTime(passiveCounter);
+function calculateMembranePotential(permeabilities){
+    //generalisation for divalent ions see https://reader.elsevier.com/reader/sd/pii/0025556476900183?token=10D48EF152A0A3957A80E434135B74531F4AA06B4DC1AE53AD665C3D2EC0E464D4D8DD2C0967654A06278F3D94F61B24&originRegion=eu-west-1&originCreation=20221126202218
+
+    var pNa = permeabilities[0];
+    var pK = permeabilities[1];
+    var pCa = permeabilities[2];
+    var pCl = permeabilities[3];
+
+    var rtfConstant = 25.6925775528; //=R*T/F
 
     var naEx = getSelectedIon("Na");
     var kEx = getSelectedIon("K");
@@ -714,17 +734,43 @@ function recordPassive() {
     var naIn, kIn, caIn, clIn;
     [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
-    var permeabilities = getPermeabilities(lastPotential, null);
+    //see paper above for variable definitions
+    var s1 = pNa * naEx + pK * kEx + pCl * clIn;
+    var t1 = pNa * naIn + pK * kIn + pCl * clEx;
+    var s2 = pCa * caEx;
+    var t2 = pCa * caIn;
 
+    var nummerator = s1 - t1 + Math.sqrt((s1 + t1)**2 + 16 * (t1*s2 + t2*s1 + 4*t2*s2));
+    var denominator = 2*(t1 + 4 * t2);
+
+    return rtfConstant * Math.log(nummerator/denominator);  
+}
+
+function calculateCurrentForGivenPotential(potential, permeabilities){
     var pNa = permeabilities[0];
     var pK = permeabilities[1];
     var pCa = permeabilities[2];
     var pCl = permeabilities[3];
 
-    var rtfConstant = 25.6925775528;
+    var rtfConstant = 25.6925775528; //=R*T/F
 
-    var membranePotential = rtfConstant * Math.log((pNa * naEx + pK * kEx + pCa * caEx + pCl * clIn) / (pNa * naIn + pK * kIn + pCa * caIn + pCl * clEx));
+    var naEx = getSelectedIon("Na");
+    var kEx = getSelectedIon("K");
+    var caEx = getSelectedIon("Ca");
+    var clEx = getSelectedIon("Cl");
 
+    var naIn, kIn, caIn, clIn;
+    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
+
+    return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+}
+
+function recordPassive() {
+    var time = timerCounterToTime(passiveCounter);
+
+    var permeabilities = getPermeabilities(lastPotential, null);
+
+    var membranePotential = calculateMembranePotential(permeabilities);
 
     var juctionPotential = getJunctionPotential();
     var offsetPotential = parseFloat($('#offsetPotentialInput').val());
@@ -733,7 +779,7 @@ function recordPassive() {
     lastPotential = potential;
 
 
-    var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+    var current = calculateCurrentForGivenPotential(potential, permeabilities);
 
     updateOutputFields(potential, current);
 
@@ -756,34 +802,14 @@ function recordVoltagClamp() {
 
     var juctionPotential = getJunctionPotential();
     var offsetPotential = parseFloat($('#offsetPotentialInput').val());
-    var noise = getNoise(0.5);
+    
 
 
-    var potential = juctionPotential + offsetPotential + noise + clampPotential; //calculate actual membranepotential !!!!!!!
-
-    var naEx = getSelectedIon("Na");
-    var kEx = getSelectedIon("K");
-    var caEx = getSelectedIon("Ca");
-    var clEx = getSelectedIon("Cl");
-
-
-    var naIn, kIn, caIn, clIn;
-    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
-
+    var potential = juctionPotential + offsetPotential + clampPotential; //calculate actual membranepotential !!!!!!!
 
     var permeabilities = getPermeabilities(clampPotential, null);
 
-    var pNa = permeabilities[0];
-    var pK = permeabilities[1];
-    var pCa = permeabilities[2];
-    var pCl = permeabilities[3];
-
-    var rtfConstant = 25.6925775528;
-
-
-    var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
-
-
+    var current = calculateCurrentForGivenPotential(potential, permeabilities);
     updateOutputFields(clampPotential, current);
 
 
@@ -807,32 +833,17 @@ function recordIvCurve() {
 
     var juctionPotential = getJunctionPotential();
     var offsetPotential = parseFloat($('#offsetPotentialInput').val());
-    var noise = getNoise(0.5);
+   
 
 
-    var potential = juctionPotential + offsetPotential + noise + clampPotential; //calculate actual membranepotential !!!!!!!
-
-    var naEx = getSelectedIon("Na");
-    var kEx = getSelectedIon("K");
-    var caEx = getSelectedIon("Ca");
-    var clEx = getSelectedIon("Cl");
-
-    var naIn, kIn, caIn, clIn;
-    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
+    var potential = juctionPotential + offsetPotential + clampPotential; //calculate actual membranepotential !!!!!!!
 
 
     var permeabilities = getPermeabilities(clampPotential, timeAtClampPotential);
 
-    var pNa = permeabilities[0];
-    var pK = permeabilities[1];
-    var pCa = permeabilities[2];
-    var pCl = permeabilities[3];
+    
 
-    var rtfConstant = 25.6925775528;
-
-
-    var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
-
+    var current = calculateCurrentForGivenPotential(potential, permeabilities);
     updateOutputFields(clampPotential, current);
 
     ivDataMatrix[ivCurveCounter] = [clampPotential, current];
@@ -873,31 +884,11 @@ function getClampPotential(time) {
 }
 
 function updateWholeCellReadout() {
-
-    var naEx = getSelectedIon("Na");
-    var kEx = getSelectedIon("K");
-    var caEx = getSelectedIon("Ca");
-    var clEx = getSelectedIon("Cl");
-
-
-
-
     var time = timerCounterToTime(bathTimerCounter);
-
-    var naIn, kIn, caIn, clIn;
-    [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
     var permeabilities = getPermeabilities(lastPotential, null);
 
-    var pNa = permeabilities[0];
-    var pK = permeabilities[1];
-    var pCa = permeabilities[2];
-    var pCl = permeabilities[3];
-
-    var rtfConstant = 25.6925775528;
-
-    var membranePotential = rtfConstant * Math.log((pNa * naEx + pK * kEx + pCa * caEx + pCl * clIn) / (pNa * naIn + pK * kIn + pCa * caIn + pCl * clEx));
-
+    var membranePotential = calculateMembranePotential(permeabilities);
 
 
     var juctionPotential = getJunctionPotential();
@@ -906,8 +897,9 @@ function updateWholeCellReadout() {
     var potential = juctionPotential + offsetPotential + noise + membranePotential;
     lastPotential = potential;
 
+    var current = calculateCurrentForGivenPotential(potential, permeabilities);
 
-    var current = pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx));  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+
     updateOutputFields(potential, current);
 
 
@@ -928,16 +920,16 @@ function updateWholeCellReadout() {
 function getPermeabilities(potential, timeAtPotential) {
     var selectedChannel = $("#selectedChannel").val();
     switch (selectedChannel) {
-        case '1':
+        case '1': //daueroffen für K+
             return [0, 4, 0, 0];
             break;
-        case '2'://kv
+        case '2'://kir
             var slope = 4;
             var vhalf = -25;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
             var a = 0.86403262;
-            var b = 0.05;
-            var c = 0.01;
+            var b = 0;
+            var c = 0.05;
             var d = 10;
             if (timeAtPotential != null) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
@@ -953,7 +945,7 @@ function getPermeabilities(potential, timeAtPotential) {
 
             return [0, conductance, 0, 0];
             break;
-        case '4'://kv
+        case '8'://kv
             var slope = -4;
             var vhalf = -50;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
@@ -961,14 +953,14 @@ function getPermeabilities(potential, timeAtPotential) {
             var b = 0.05;
             var c = 0.01;
             var d = 0.4;
-            if (timeAtPotential != null) {
+            if (timeAtPotential != null && timeAtPotential != 0) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
 
             return [0, conductance, 0, 0];
             break;
-        case '5'://Nav ohne kinetic
+        case '4'://Nav ohne kinetic
             var slope = -6;
             var vhalf = -45;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
@@ -976,7 +968,7 @@ function getPermeabilities(potential, timeAtPotential) {
 
             return [conductance, 0, 0, 0];
             break;
-        case '6'://Nav
+        case '9'://Nav
             var slope = -6;
             var vhalf = -45;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
@@ -1006,11 +998,14 @@ function getPermeabilities(potential, timeAtPotential) {
 
             return [0, 0, conductance, 0];
             break;
-        case '8':
+        case '6': //daueroffen Cl-
             return [0, 0, 0, 1];
             break;
-        case '9':
+        case '5':  //daueroffen für Na+
             return [2, 0, 0, 0];
+            break;
+        case '10':  //daueroffen für Na+ K+
+            return [2, 2, 0, 0];
             break;
     }
 
@@ -1019,7 +1014,7 @@ function getPermeabilities(potential, timeAtPotential) {
 
 function getSelectedIon(ion) {
     var selectedIon = '#' + ion + $('input[name=selectedSolution]:checked').val();
-    var concentration = parseInt($(selectedIon).val());
+    var concentration = parseFloat($(selectedIon).val());
     return concentration;
 }
 
