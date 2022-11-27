@@ -724,7 +724,7 @@ function calculateMembranePotential(permeabilities){
     var pCa = permeabilities[2];
     var pCl = permeabilities[3];
 
-    var rtfConstant = 25.6925775528; //=R*T/F
+    const rtfConstant = 26.71373; //=R*T/F
 
     var naEx = getSelectedIon("Na");
     var kEx = getSelectedIon("K");
@@ -746,6 +746,17 @@ function calculateMembranePotential(permeabilities){
     return rtfConstant * Math.log(nummerator/denominator);  
 }
 
+function goldmanCurrentEquation(z, P, Vm, Co, Ci,){
+    const F = 96.48533212;
+    const R = 8.314462618;
+    const T = 310;
+    const e = Math.E;
+    var exponent = (- z * F * Vm)/(R*T); 
+
+    return ((Ci - Co * e**exponent) / (1-e**exponent)) * (z**2 * F**2 * Vm * P) / (R * T);
+
+}
+
 function calculateCurrentForGivenPotential(potential, permeabilities){
     var pNa = permeabilities[0];
     var pK = permeabilities[1];
@@ -762,7 +773,15 @@ function calculateCurrentForGivenPotential(potential, permeabilities){
     var naIn, kIn, caIn, clIn;
     [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
-    return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - rtfConstant * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+    return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant/2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+
+    /* var INa = goldmanCurrentEquation(1, pNa, potential, naEx, naIn);
+    var IK = goldmanCurrentEquation(1, pK, potential, kEx, kIn);
+    var ICl = goldmanCurrentEquation(-1, pCl, potential, clEx, clIn);
+    var ICa = goldmanCurrentEquation(2, pCa, potential, caEx, caIn);
+
+    return INa + IK + ICl + ICa + getNoise(4) ; */
+
 }
 
 function recordPassive() {
@@ -922,6 +941,7 @@ function getPermeabilities(potential, timeAtPotential) {
     switch (selectedChannel) {
         case '1': //daueroffen für K+
             return [0, 4, 0, 0];
+            //return [0, 0.015, 0, 0];
             break;
         case '2'://kir
             var slope = 4;
@@ -935,8 +955,8 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-
             return [0, conductance, 0, 0];
+            //return [0, 0.0227*conductance, 0, 0];
             break;
         case '3': //kv ohne kinetik
             var slope = -4;
@@ -986,7 +1006,7 @@ function getPermeabilities(potential, timeAtPotential) {
         case '7'://Cav
             var slope = -6;
             var vhalf = -15;
-            var conductance = 2 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
+            var conductance = 3 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
             var a = 0.86403262;
             var b = 0.05;
             var c = 0.01;
@@ -1005,7 +1025,7 @@ function getPermeabilities(potential, timeAtPotential) {
             return [2, 0, 0, 0];
             break;
         case '10':  //daueroffen für Na+ K+
-            return [2, 2, 0, 0];
+            return [1.5, 1, 0, 0];
             break;
     }
 
