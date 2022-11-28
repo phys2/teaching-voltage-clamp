@@ -42,7 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
+<<<<<<< Updated upstream
     <script src="js/scripts.min.js?v=271122"></script>
+=======
+    <script src="js/scripts.min.js?v=281122"></script>
+>>>>>>> Stashed changes
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -72,11 +76,82 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         data-bs-target="#offcanvasHelp">
                         <i class="bi-info-circle"></i> <span class="d-none d-md-inline">Erkl&auml;rungen</span>
                     </button>
+                    <button class="btn btn-outline-light ms-2" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasRight">
+                        <i class="bi-gear"></i> <span class="d-none d-md-inline">Einstellungen</span>
+                    </button>
                 </form>
             </div>
         </nav>
     </header>
     <main>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasRightLabel">Einstellungen</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                    aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <fieldset class="row mb-4">
+                    <legend class="col-form-label">Anzeige-Modus</legend>
+                    <div class="ms-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="displayModeRadio" id="displayModeHidden"
+                                value="hidden" checked>
+                            <label class="form-check-label" for="displayModeHidden">
+                                Verdeckter Modus
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="displayModeRadio" id="displayModeOpen"
+                                value="open">
+                            <label class="form-check-label" for="displayModeOpen">
+                                L&ouml;sungen anzeigen
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                <hr>
+                <fieldset class="row mb-4">
+                    <legend class="col-form-label">Berechnung der Stromgr&ouml;&szlig;e</legend>
+                    <div class="ms-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="currentSimModeRadio" id="currentSimModeSimple"
+                                value="simple" checked>
+                            <label class="form-check-label" for="currentSimModeSimple">
+                                Vereinfachte Methode
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="currentSimModeRadio" id="currentSimModeGoldman"
+                                value="goldman">
+                            <label class="form-check-label" for="currentSimModeGoldman">
+                                Goldman-Gleichung
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                <small>
+                    <p>
+                        Bei der vereinfachten Methode ist der Strom stets proportional zur Triebkraft für die jeweilige
+                        Ionenspezies. Daraus resultiert eine lineare Beziehung zwischen Strom und Membranpotential, die
+                        Leitf&auml;higkeit G<sub>Ion</sub> bleibt konstant. Bei mehreren Ionenspezies wird der Gesamtstrom
+                        &uuml;ber
+                        das Verh&auml;ltnis der Leitf&auml;higkeiten angen&auml;hert.
+                    </p>
+                    <p>
+                        Eine deutlich akkuratere Berechnung des Ionenstroms erm&ouml;glicht die Goldman-Gleichung:
+                    </p>
+                    <div id="goldmanDiv">$$I_X =\frac{z^2F^2V_mP_X}{RT}\left (
+                        \frac{[X]_i-[X]_oe^{-zFV_m/RT}}{1-e^{-zFV_m/RT}} \right )$$</div>
+                    <p>
+                        Daraus folgt dass der Ionenstrom nicht proportional zur Triebkraft ist. Es besteht keine
+                        lineare Beziehung zwischen Strom und Membranpotential, die Leitf&auml;higkeit ist nicht konstant,
+                        sondern abhängig vom Membranpotential. Bei mehreren Ionenspezies entspricht der Gesamtstrom der Summe der Einzelstr&ouml;me.
+                    </p>
+                </small>
+            </div>
+        </div>
         <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasHelp">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasExampleLabel">Spannungsklemme von Oozyten</h5>
@@ -131,7 +206,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         angezeigt wird!</li>
                     <li>Zur eigentlichen Aufzeichnung der Messung kannst du zwischen 3 Modi w&auml;hlen:
                         <ul>
-                            <li>Der Modus &quot;nur aufzeichnen&quot; erlaubt dir z.&nbsp;B. aufzuzeichnen, was beim Wechsel
+                            <li>Der Modus &quot;nur aufzeichnen&quot; erlaubt dir z.&nbsp;B. aufzuzeichnen, was beim
+                                Wechsel
                                 auf  unterschiedliche Badl&ouml;sungen passiert.</li>
                             <li>Ganz anders funktioniert die Spannungsklemme: Hierbei wird das Membranpotential nicht
                                 mehr gemessen, sondern aktiv durch die Elektrode vorgegeben. Gleichzeitig wird aber
@@ -355,7 +431,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1" selected>1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
-                                                            <option value="10">10 mM</option>                                                            
+                                                            <option value="10">10 mM</option>
                                                             <option value="100">100 mM</option>
                                                         </select>
                                                     </div>
@@ -445,7 +521,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                             <option value="1" selected>1 mM</option>
                                                             <option value="3">3 mM</option>
                                                             <option value="5">5 mM</option>
-                                                            <option value="10">10 mM</option>                                                            
+                                                            <option value="10">10 mM</option>
                                                             <option value="100">100 mM</option>
                                                         </select>
                                                     </div>
@@ -513,7 +589,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                             <option value="7">unbekannter Kanal 7</option>
                                             <option value="8">unbekannter Kanal 8</option>
                                             <option value="9">unbekannter Kanal 9</option>
-                                            <option value="10">unbekannter Kanal 10</option>                                              
+                                            <option value="10">unbekannter Kanal 10</option>
                                         </select>
                                     </div>
                                     <div class="d-grid gap-3 mb-3">
@@ -677,21 +753,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
 
     <div class="modal fade" id="choiceModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog" role="document">
-          <div class="modal-content rounded-6 shadow">
-            <div class="modal-header border-bottom-0">
-              <h5 class="modal-title">Simulationsmodus w&auml;hlen</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content rounded-6 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title">Simulationsmodus w&auml;hlen</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-0">
+                    <p>W&auml;hrend des Praktikums sollst du einige Aufgaben eigenst&auml;ndig l&ouml;sen. W&auml;hle
+                        deshalb zun&auml;chst den verdeckten Modus, damit dir die L&ouml;sungen nicht bereits verraten
+                        werden. Zur Nacharbeit kannst du dir dann alle zus&auml;tzlichen Angaben anzeigen lassen.</p>
+                </div>
+                <div class="modal-footer flex-column border-top-0">
+                    <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal"
+                        id="hiddenModeButton">Verdeckter Modus</button>
+                    <button type="button" class="btn btn-lg btn-light w-100 mx-0" data-bs-dismiss="modal"
+                        id="openModeButton">L&ouml;sungen anzeigen</button>
+                </div>
             </div>
-            <div class="modal-body py-0">
-              <p>W&auml;hrend des Praktikums sollst du einige Aufgaben eigenst&auml;ndig l&ouml;sen. W&auml;hle deshalb zun&auml;chst den verdeckten Modus, damit dir die L&ouml;sungen nicht bereits verraten werden. Zur Nacharbeit kannst du dir dann alle zus&auml;tzlichen Angaben anzeigen lassen.</p>
-            </div>
-            <div class="modal-footer flex-column border-top-0">
-              <button type="button" class="btn btn-lg btn-primary w-100 mx-0 mb-2" data-bs-dismiss="modal" id="hiddenModeButton">Verdeckter Modus</button>
-              <button type="button" class="btn btn-lg btn-light w-100 mx-0" data-bs-dismiss="modal" id="openModeButton">L&ouml;sungen anzeigen</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
     <div class="modal fade" id="mainModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog">
