@@ -98,7 +98,7 @@ $(function () {
             $('#stopRecording').removeAttr("disabled");
             clearInterval(wholeCellTimer);
             canvasPointsMatrix.length = 0
-            
+
             if ($('input[name=recordingMode]:checked').val() == '1') {
                 //passive
                 patchStatus = 3;
@@ -271,11 +271,22 @@ $(function () {
         paintIvCanvas();
     });
 
-    $('#openModeButton').click(function () {
-        $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option><option value="2">K&#x1D62;&#x1D63;</option><option value="3">K&#x1D65; (nicht inaktivierend)</option><option value="4">Na&#x1D65; (nicht inaktivierend)</option><option value="5">daueroffen f&uuml;r Na&#x207A;</option><option value="6">daueroffen f&uuml;r Cl&#x207B;</option><option value="7">Ca&#x1D65;</option><option value="8"> K&#x1D65; (inaktivierend)</option><option value="9">Na&#x1D65; (inaktivierend)</option><option value="10">nicht-selektiver Kationenkanal</option>');
+    $('#openModeButton').click(function () {        
+        loadOpenMode();
+        $('input:radio[name="displayModeRadio"]').filter('[value="open"]').attr('checked', true);
     });
     $('#hiddenModeButton').click(function () {
-        $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option><option value="2">unbekannter Kanal 2</option><option value="3">unbekannter Kanal 3</option><option value="4">unbekannter Kanal 4</option><option value="5">unbekannter Kanal 5</option><option value="6">unbekannter Kanal 6</option><option value="7">unbekannter Kanal 7</option><option value="8">unbekannter Kanal 8</option><option value="9">unbekannter Kanal 9</option><option value="10">unbekannter Kanal 10</option>');
+        loadHiddenMode();
+        $('input:radio[name="displayModeRadio"]').filter('[value="hidden"]').attr('checked', true);
+    });
+
+    $('input[type=radio][name=displayModeRadio]').change(function() {
+        if (this.value == 'open') {
+            loadOpenMode();
+        }
+        else {
+            loadHiddenMode();
+        }
     });
 
     $('#toggleAmpage').click(function () {
@@ -380,6 +391,13 @@ $(function () {
     })
 
 });
+
+function loadOpenMode(){
+    $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option><option value="2">K&#x1D62;&#x1D63;</option><option value="3">K&#x1D65; (nicht inaktivierend)</option><option value="4">Na&#x1D65; (nicht inaktivierend)</option><option value="5">daueroffen f&uuml;r Na&#x207A;</option><option value="6">daueroffen f&uuml;r Cl&#x207B;</option><option value="7">Ca&#x1D65;</option><option value="8"> K&#x1D65; (inaktivierend)</option><option value="9">Na&#x1D65; (inaktivierend)</option><option value="10">nicht-selektiver Kationenkanal</option>');
+}
+function loadHiddenMode(){
+    $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option><option value="2">unbekannter Kanal 2</option><option value="3">unbekannter Kanal 3</option><option value="4">unbekannter Kanal 4</option><option value="5">unbekannter Kanal 5</option><option value="6">unbekannter Kanal 6</option><option value="7">unbekannter Kanal 7</option><option value="8">unbekannter Kanal 8</option><option value="9">unbekannter Kanal 9</option><option value="10">unbekannter Kanal 10</option>');
+}
 
 function importIvData() {
     var v_memForAnalysis = ivDataMatrix[0][0];
@@ -531,7 +549,7 @@ function paintIvCanvas() {
 
     ctx.fillRect(0, 0, width, height);
 
-    
+
 
     var middleX = Math.round(width / 2);
     var middleY = Math.round(height / 2);
@@ -716,7 +734,7 @@ function getIvYValue(height, y, amp, yShiftFactor = 0.5) {
     return Math.round(-1 * (y / amp) * (height - 30) + Math.round((height - 30) * yShiftFactor) + 15);
 }
 
-function calculateMembranePotential(permeabilities){
+function calculateMembranePotential(permeabilities) {
     //generalisation for divalent ions see https://reader.elsevier.com/reader/sd/pii/0025556476900183?token=10D48EF152A0A3957A80E434135B74531F4AA06B4DC1AE53AD665C3D2EC0E464D4D8DD2C0967654A06278F3D94F61B24&originRegion=eu-west-1&originCreation=20221126202218
 
     var pNa = permeabilities[0];
@@ -740,17 +758,22 @@ function calculateMembranePotential(permeabilities){
     var s2 = pCa * caEx;
     var t2 = pCa * caIn;
 
-    var nummerator = s1 - t1 + Math.sqrt((s1 + t1)**2 + 16 * (t1*s2 + t2*s1 + 4*t2*s2));
-    var denominator = 2*(t1 + 4 * t2);
+    var nummerator = s1 - t1 + Math.sqrt((s1 + t1) ** 2 + 16 * (t1 * s2 + t2 * s1 + 4 * t2 * s2));
+    var denominator = 2 * (t1 + 4 * t2);
 
-    return rtfConstant * Math.log(nummerator/denominator);  
+    return rtfConstant * Math.log(nummerator / denominator);
 }
 
+<<<<<<< Updated upstream
 function goldmanCurrentEquation(z, P, Vm, Co, Ci,){
+=======
+function goldmanCurrentEquation(z, P, Vm, Co, Ci,) {
+>>>>>>> Stashed changes
     const F = 96.48533212;
     const R = 8.314462618;
     const T = 310;
     const e = Math.E;
+<<<<<<< Updated upstream
     var exponent = (- z * F * Vm)/(R*T); 
 
     return ((Ci - Co * e**exponent) / (1-e**exponent)) * (z**2 * F**2 * Vm * P) / (R * T);
@@ -758,6 +781,19 @@ function goldmanCurrentEquation(z, P, Vm, Co, Ci,){
 }
 
 function calculateCurrentForGivenPotential(potential, permeabilities){
+=======
+    var exponent = (- z * F * Vm) / (R * T);
+
+    return ((Ci - Co * e ** exponent) / (1 - e ** exponent)) * (z ** 2 * F ** 2 * Vm * P) / (R * T);
+
+}
+
+function useSimpleCurrentModel(){
+    return ($("input[name='currentSimModeRadio']:checked").val() == "simple");
+}
+
+function calculateCurrentForGivenPotential(potential, permeabilities) {
+>>>>>>> Stashed changes
     var pNa = permeabilities[0];
     var pK = permeabilities[1];
     var pCa = permeabilities[2];
@@ -773,6 +809,7 @@ function calculateCurrentForGivenPotential(potential, permeabilities){
     var naIn, kIn, caIn, clIn;
     [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
+<<<<<<< Updated upstream
     return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant/2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
 
     /* var INa = goldmanCurrentEquation(1, pNa, potential, naEx, naIn);
@@ -781,6 +818,18 @@ function calculateCurrentForGivenPotential(potential, permeabilities){
     var ICa = goldmanCurrentEquation(2, pCa, potential, caEx, caIn);
 
     return INa + IK + ICl + ICa + getNoise(4) ; */
+=======
+    if (useSimpleCurrentModel()) {
+        return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant / 2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+    } else {
+        var INa = goldmanCurrentEquation(1, pNa, potential, naEx, naIn);
+        var IK = goldmanCurrentEquation(1, pK, potential, kEx, kIn);
+        var ICl = goldmanCurrentEquation(-1, pCl, potential, clEx, clIn);
+        var ICa = goldmanCurrentEquation(2, pCa, potential, caEx, caIn);
+
+        return (INa + IK + ICl + ICa) + getNoise(4);
+    }
+>>>>>>> Stashed changes
 
 }
 
@@ -821,7 +870,7 @@ function recordVoltagClamp() {
 
     var juctionPotential = getJunctionPotential();
     var offsetPotential = parseFloat($('#offsetPotentialInput').val());
-    
+
 
 
     var potential = juctionPotential + offsetPotential + clampPotential; //calculate actual membranepotential !!!!!!!
@@ -852,7 +901,7 @@ function recordIvCurve() {
 
     var juctionPotential = getJunctionPotential();
     var offsetPotential = parseFloat($('#offsetPotentialInput').val());
-   
+
 
 
     var potential = juctionPotential + offsetPotential + clampPotential; //calculate actual membranepotential !!!!!!!
@@ -860,7 +909,7 @@ function recordIvCurve() {
 
     var permeabilities = getPermeabilities(clampPotential, timeAtClampPotential);
 
-    
+
 
     var current = calculateCurrentForGivenPotential(potential, permeabilities);
     updateOutputFields(clampPotential, current);
@@ -940,8 +989,16 @@ function getPermeabilities(potential, timeAtPotential) {
     var selectedChannel = $("#selectedChannel").val();
     switch (selectedChannel) {
         case '1': //daueroffen für K+
+<<<<<<< Updated upstream
             return [0, 4, 0, 0];
             //return [0, 0.015, 0, 0];
+=======
+            if(useSimpleCurrentModel()){
+                return [0, 4, 0, 0];
+            }else {
+                return [0, 0.03, 0, 0];
+            }
+>>>>>>> Stashed changes
             break;
         case '2'://kir
             var slope = 4;
@@ -955,6 +1012,12 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
+<<<<<<< Updated upstream
+=======
+            if(! useSimpleCurrentModel()){
+                conductance *= 0.0089;
+            }
+>>>>>>> Stashed changes
             return [0, conductance, 0, 0];
             //return [0, 0.0227*conductance, 0, 0];
             break;
@@ -962,7 +1025,9 @@ function getPermeabilities(potential, timeAtPotential) {
             var slope = -4;
             var vhalf = -50;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-
+            if(! useSimpleCurrentModel()){
+                conductance *= 0.0089;
+            }
             return [0, conductance, 0, 0];
             break;
         case '8'://kv
@@ -977,15 +1042,18 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-
+            if(! useSimpleCurrentModel()){
+                conductance *= 0.0089;
+            }
             return [0, conductance, 0, 0];
             break;
         case '4'://Nav ohne kinetic
             var slope = -6;
             var vhalf = -45;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-
-
+            if(! useSimpleCurrentModel()){
+                conductance *= 0.00416;
+            }
             return [conductance, 0, 0, 0];
             break;
         case '9'://Nav
@@ -1000,7 +1068,9 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-
+            if(! useSimpleCurrentModel()){
+                conductance *= 0.0043;
+            }
             return [conductance, 0, 0, 0];
             break;
         case '7'://Cav
@@ -1015,17 +1085,36 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-
-            return [0, 0, conductance, 0];
+            if(! useSimpleCurrentModel()){
+                conductance /= 2.5;
+            }
+            return [0, 0, conductance, 0];            
             break;
         case '6': //daueroffen Cl-
-            return [0, 0, 0, 1];
+            if(useSimpleCurrentModel()){
+                return [0, 0, 0, 3];
+            }else {
+                return [0, 0, 0, 0.038];
+            } 
             break;
         case '5':  //daueroffen für Na+
-            return [2, 0, 0, 0];
+            if(useSimpleCurrentModel()){
+                return [2, 0, 0, 0];
+            }else {
+                return [0.0077, 0, 0, 0];
+            }            
             break;
+<<<<<<< Updated upstream
         case '10':  //daueroffen für Na+ K+
             return [1.5, 1, 0, 0];
+=======
+        case '10':  //daueroffen für Na+ K+            
+            if(useSimpleCurrentModel()){
+                return [1.5, 1, 0, 0];
+            }else {
+                return [0.00463, 0.003, 0, 0];
+            }
+>>>>>>> Stashed changes
             break;
     }
 
@@ -1066,7 +1155,7 @@ function updateBathReadout() {
 }
 
 function paintMainCanvas() {
-    drawGrid('ampageCanvas', maxAmp, ' mA', ampOffset);
+    drawGrid('ampageCanvas', maxAmp, ' nA', ampOffset);
     drawGrid('voltageCanvas', maxVolt, ' mV', voltOffset);
     if (canvasPointsMatrix.length > 1) {
         drawRecord('ampageCanvas', maxAmp, ampOffset, 'black', 2);
