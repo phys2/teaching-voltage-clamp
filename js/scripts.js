@@ -764,24 +764,11 @@ function calculateMembranePotential(permeabilities) {
     return rtfConstant * Math.log(nummerator / denominator);
 }
 
-<<<<<<< Updated upstream
-function goldmanCurrentEquation(z, P, Vm, Co, Ci,){
-=======
 function goldmanCurrentEquation(z, P, Vm, Co, Ci,) {
->>>>>>> Stashed changes
     const F = 96.48533212;
     const R = 8.314462618;
     const T = 310;
     const e = Math.E;
-<<<<<<< Updated upstream
-    var exponent = (- z * F * Vm)/(R*T); 
-
-    return ((Ci - Co * e**exponent) / (1-e**exponent)) * (z**2 * F**2 * Vm * P) / (R * T);
-
-}
-
-function calculateCurrentForGivenPotential(potential, permeabilities){
-=======
     var exponent = (- z * F * Vm) / (R * T);
 
     return ((Ci - Co * e ** exponent) / (1 - e ** exponent)) * (z ** 2 * F ** 2 * Vm * P) / (R * T);
@@ -793,7 +780,6 @@ function useSimpleCurrentModel(){
 }
 
 function calculateCurrentForGivenPotential(potential, permeabilities) {
->>>>>>> Stashed changes
     var pNa = permeabilities[0];
     var pK = permeabilities[1];
     var pCa = permeabilities[2];
@@ -809,16 +795,6 @@ function calculateCurrentForGivenPotential(potential, permeabilities) {
     var naIn, kIn, caIn, clIn;
     [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
-<<<<<<< Updated upstream
-    return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant/2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
-
-    /* var INa = goldmanCurrentEquation(1, pNa, potential, naEx, naIn);
-    var IK = goldmanCurrentEquation(1, pK, potential, kEx, kIn);
-    var ICl = goldmanCurrentEquation(-1, pCl, potential, clEx, clIn);
-    var ICa = goldmanCurrentEquation(2, pCa, potential, caEx, caIn);
-
-    return INa + IK + ICl + ICa + getNoise(4) ; */
-=======
     if (useSimpleCurrentModel()) {
         return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant / 2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
     } else {
@@ -829,7 +805,6 @@ function calculateCurrentForGivenPotential(potential, permeabilities) {
 
         return (INa + IK + ICl + ICa) + getNoise(4);
     }
->>>>>>> Stashed changes
 
 }
 
@@ -989,16 +964,11 @@ function getPermeabilities(potential, timeAtPotential) {
     var selectedChannel = $("#selectedChannel").val();
     switch (selectedChannel) {
         case '1': //daueroffen für K+
-<<<<<<< Updated upstream
-            return [0, 4, 0, 0];
-            //return [0, 0.015, 0, 0];
-=======
             if(useSimpleCurrentModel()){
                 return [0, 4, 0, 0];
             }else {
                 return [0, 0.03, 0, 0];
             }
->>>>>>> Stashed changes
             break;
         case '2'://kir
             var slope = 4;
@@ -1012,14 +982,10 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-<<<<<<< Updated upstream
-=======
             if(! useSimpleCurrentModel()){
                 conductance *= 0.0089;
             }
->>>>>>> Stashed changes
             return [0, conductance, 0, 0];
-            //return [0, 0.0227*conductance, 0, 0];
             break;
         case '3': //kv ohne kinetik
             var slope = -4;
@@ -1104,17 +1070,12 @@ function getPermeabilities(potential, timeAtPotential) {
                 return [0.0077, 0, 0, 0];
             }            
             break;
-<<<<<<< Updated upstream
-        case '10':  //daueroffen für Na+ K+
-            return [1.5, 1, 0, 0];
-=======
         case '10':  //daueroffen für Na+ K+            
             if(useSimpleCurrentModel()){
                 return [1.5, 1, 0, 0];
             }else {
                 return [0.00463, 0.003, 0, 0];
             }
->>>>>>> Stashed changes
             break;
     }
 
