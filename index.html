@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--CSS-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css?v=301021">
+    <link rel="stylesheet" href="style.css?v=071222">
     <!--JS-->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js">
@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="js/scripts.min.js?v=281122"></script>
+    <script src="js/scripts.min.js?v=071222"></script>
     <!--Favicons-->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -693,24 +693,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                         </div>
                         <div class="card-body">
                             <div class="row mb-2">
-                                <div class="col-12 col-xl-6 mb-0">
+                                <div class="col-12 col-xl-9 mb-0">
                                     <div class="d-grid">
                                         <button class="btn btn-primary  mb-3" id="importIvData" disabled>
-                                            Daten aus Spannungsklemme laden</button>
+                                            <i class="bi-box-arrow-down"></i> Messdaten aus Spannungsklemme &uuml;bertragen</button>
                                     </div>
                                 </div>
-                                <div class="col-12 col-xl-6">
-                                    <div class="input-group">
-                                        <select class="form-select" id="selectedModel" name="selectedModel">
-                                            <option value="1" selected>Gerade</option>
-                                            <option value="2">Hodgkin-Huxley-Modell</option>
-                                        </select>
-                                        <button class="btn btn-outline-primary" type="button" id="fitCurve"
-                                            disabled><span class="spinner-grow spinner-grow-sm" role="status"
-                                                id="loadingSpinner"></span> Kurve fitten</button>
-                                    </div>
+                                <div class="col-12 col-xl-3">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary  mb-3" id="eraseIvButton" disabled>
+                                            <i class="bi-trash"></i> L&ouml;schen </button>
+                                    </div>   
                                 </div>
                             </div>
+                            <div id="channelLegend" class="mb-1"></div>                            
                             <div id="analysisScreen" class="ratio ratio-4x3 mb-3">
                                 <canvas id="analysisCanvas"></canvas>
                                 <div id="ampZoomIv" class="zoomButtons">
@@ -723,6 +719,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.  -->
                                                 class="bi bi-chevron-contract"></i></button>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <select class="form-select" id="selectedChannelToFit" name="selectedChannelToFit" disabled>
+                                    <option value="NaN" selected>Kanal ausw&auml;hlen...</option>
+                                </select>
+                                <select class="form-select" id="selectedModel" name="selectedModel">
+                                    <option value="1" selected>Gerade</option>
+                                    <option value="2">Hodgkin-Huxley-Modell</option>
+                                </select>
+                                <button class="btn btn-outline-primary" type="button" id="fitCurve"
+                                    disabled><span class="spinner-grow spinner-grow-sm" role="status"
+                                        id="loadingSpinner"></span> Kurve fitten</button>
                             </div>
                             <div>Modell f&uuml;r die Strom-Spannung-Kurve: </div>
                             <div id="modelDiv">$$I(U) = a \cdot U + b$$</div>
