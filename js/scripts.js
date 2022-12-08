@@ -13,9 +13,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-const deltaT = 20;
+const deltaT = 20; //20
 
 const dpi = window.devicePixelRatio;
+
+const rtfConstant = 25.6925775528;
 
 var maxVolt = 120;
 var maxAmp = 600;
@@ -39,7 +41,7 @@ var canvasPointsMatrix = new Array();
 
 var ivDataMatrix = new Array(600); for (let i = 0; i < 600; ++i) ivDataMatrix[i] = [0, 0];
 
-var ivMaxPointMatrix = new Array();
+var ivMaxPointTotalMatrix = new Array();
 
 var ivFittedCurve = new Object();
 
@@ -76,6 +78,7 @@ $(function () {
             patchStatus = 2;
             $("#compensate").attr("disabled", 'disabled');
             $('#wholeCellButton').attr("disabled", 'disabled');
+            $('#selectedChannel').attr("disabled", 'disabled');
             $('#startRecording').removeAttr("disabled");
 
             clearInterval(bathTimer);
@@ -114,7 +117,7 @@ $(function () {
             } else {
                 //ivcurve
                 patchStatus = 5;
-                ivCurveTimer = setInterval(recordIvCurve, deltaT);
+                ivCurveTimer = setInterval(recordIvCurve, deltaT);                
                 $('#V_mem').attr("readonly", 'readonly');
                 $('#v_0Input').attr("readonly", 'readonly');
                 $('#deltaVInput').attr("readonly", 'readonly');
@@ -181,9 +184,9 @@ $(function () {
         $('#stopRecording').attr("disabled", 'disabled');
         $('#wholeCellButton').attr("disabled", 'disabled');
         $('#importIvData').attr("disabled", 'disabled');
-        $('#fitCurve').attr("disabled", 'disabled');
         $('#waterBathButton').removeAttr("disabled");
         $('#compensate').removeAttr("disabled");
+        $('#selectedChannel').removeAttr("disabled");
         $('#offsetPotentialInput').val('0');
         $('#potentialOutput').val('');
         $('#currentOutput').val('');
@@ -193,9 +196,6 @@ $(function () {
         $('#V_mem').val('-80');
         $('#v_0Input').val('-90');
         $('#deltaVInput').val('15');
-        $('#resultBody').html('');
-        $('#resultHeader').hide();
-        $('#resultBody').hide();
         $('#Na1').val('150');
         $('#K1').val('5');
         $('#Ca1').val('1');
@@ -214,9 +214,6 @@ $(function () {
         ampOffset = 0;
         canvasPointsMatrix = new Array();
         ivDataMatrix = new Array(600); for (let i = 0; i < 600; ++i) ivDataMatrix[i] = [0, 0];
-        ivMaxPointMatrix = new Array();
-        ivFittedCurve = new Object();
-
         resizeCanvas();
     });
 
@@ -227,6 +224,8 @@ $(function () {
         } else if (document.getElementById('selectedModel').value == '2') {
             document.getElementById('modelDiv').innerHTML = '<p> $$I(U) = \\left(a \\cdot U + b\\right) \\cdot \\left( 1- \\frac{1}{ 1+ e^{\\frac{U-c}{d}} } \\right)$$ </p>';
         }
+        $('#resultHeader').hide();
+        $('#resultBody').hide();
         MathJax.typeset([document.getElementById('modelDiv')]);
     });
 
@@ -271,7 +270,7 @@ $(function () {
         paintIvCanvas();
     });
 
-    $('#openModeButton').click(function () {        
+    $('#openModeButton').click(function () {
         loadOpenMode();
         $('input:radio[name="displayModeRadio"]').filter('[value="open"]').attr('checked', true);
     });
@@ -280,7 +279,7 @@ $(function () {
         $('input:radio[name="displayModeRadio"]').filter('[value="hidden"]').attr('checked', true);
     });
 
-    $('input[type=radio][name=displayModeRadio]').change(function() {
+    $('input[type=radio][name=displayModeRadio]').change(function () {
         if (this.value == 'open') {
             loadOpenMode();
         }
@@ -305,6 +304,25 @@ $(function () {
         $('#voltageScreen').toggleClass('hiddenScreen');
         $('#toggleVoltageIcon').toggleClass('bi-arrows-collapse');
         $('#toggleVoltageIcon').toggleClass('bi-arrows-expand');
+    });
+
+    $('#eraseIvButton').click(function () {
+        $('#eraseIvButton').attr("disabled", 'disabled');
+        $('#selectedChannelToFit').attr("disabled", 'disabled');
+        $('#fitCurve').attr("disabled", 'disabled');
+        ivMaxPointTotalMatrix = new Array(); 
+        $("#channelLegend").empty(); 
+        $("#selectedChannelToFit").empty(); 
+        $('#selectedChannelToFit').append($('<option>', {
+            value: 'NaN',
+            text: 'Kanal ausw\u00e4hlen...'
+        }));
+        $('#analysisScreen').hide();
+        $('#conductanceScreen').hide();
+        $('#resultBody').html('');
+        $('#resultHeader').hide();
+        $('#resultBody').hide();
+        paintIvCanvas();
     });
 
     ///BEGIN Drag over IV Canvas functions
@@ -392,10 +410,10 @@ $(function () {
 
 });
 
-function loadOpenMode(){
+function loadOpenMode() {
     $('#selectedChannel').html('<option value="1" selected>daueroffen f&uuml;r K&#x207A;</option><option value="2">K&#x1D62;&#x1D63;</option><option value="3">K&#x1D65; (nicht inaktivierend)</option><option value="4">Na&#x1D65; (nicht inaktivierend)</option><option value="5">daueroffen f&uuml;r Na&#x207A;</option><option value="6">daueroffen f&uuml;r Cl&#x207B;</option><option value="7">Ca&#x1D65;</option><option value="8"> K&#x1D65; (inaktivierend)</option><option value="9">Na&#x1D65; (inaktivierend)</option><option value="10">nicht-selektiver Kationenkanal</option>');
 }
-function loadHiddenMode(){
+function loadHiddenMode() {
     $('#selectedChannel').html('<option value="1" selected>unbekannter Kanal 1</option><option value="2">unbekannter Kanal 2</option><option value="3">unbekannter Kanal 3</option><option value="4">unbekannter Kanal 4</option><option value="5">unbekannter Kanal 5</option><option value="6">unbekannter Kanal 6</option><option value="7">unbekannter Kanal 7</option><option value="8">unbekannter Kanal 8</option><option value="9">unbekannter Kanal 9</option><option value="10">unbekannter Kanal 10</option>');
 }
 
@@ -437,29 +455,52 @@ function importIvData() {
         }
     }
 
+    var ivMaxPointChannelMatrix = new Object();
+    channelName =$("#selectedChannel option:selected").text();
+    var occ = numberOfNameOccurences(channelName);
+    if (occ > 0) {
+        occ++;
+        channelName = channelName + ' (' + occ.toString() + ')';
+    }
+    ivMaxPointChannelMatrix.channelName = channelName;
+    ivMaxPointChannelMatrix.display = true;
+    ivMaxPointChannelMatrix.values = new Array();
 
     for (let potentialStepData of ivPointMatrix) {
         let point = new Object();
         point.referencePotential = potentialStepData.referencePotential;
         let i = potentialStepData.currents.indexOf(Math.max.apply(null, potentialStepData.currents.map(Math.abs)));
-
-
         if (i < 5) i = 5;
         point.averageCurrent = average(potentialStepData.currents.slice(i - 5, i + 5));
-        ivMaxPointMatrix.push(point);
+        ivMaxPointChannelMatrix.values.push(point);
     }
 
+    ivMaxPointTotalMatrix.push(ivMaxPointChannelMatrix);
 
-    paintIvCanvas(ivMaxPointMatrix);
+
+    paintIvCanvas();
 
     $('#fitCurve').removeAttr('disabled');
+    $('#eraseIvButton').removeAttr('disabled');
 
+    
+    $('#selectedChannelToFit').append($('<option>', {
+        value: ivMaxPointTotalMatrix.length-1,
+        text: channelName
+    }));
+    if ($('#selectedChannelToFit').val() == 'NaN'){
+        $('#selectedChannelToFit').children('option[value="NaN"]').remove();
+        $('#selectedChannelToFit').removeAttr('disabled'); 
+    }
+    
 
 }
 
 function fitCurve() {
     document.getElementById('loadingSpinner').style.display = 'inline-block';
     var selectedModel = $('#selectedModel').val();
+
+    var selectedChannelToFit = $('#selectedChannelToFit').val();
 
     var eq_obj;
     if (selectedModel == '1') {
@@ -475,7 +516,7 @@ function fitCurve() {
 
     var xValues = new Array();
     var yValues = new Array();
-    for (let averagedPoint of ivMaxPointMatrix) {
+    for (let averagedPoint of ivMaxPointTotalMatrix[selectedChannelToFit].values) {
         xValues.push([averagedPoint.referencePotential]);
         yValues.push(averagedPoint.averageCurrent);
     }
@@ -488,15 +529,18 @@ function fitCurve() {
     eq_obj.fit(data1).then(function (res) {
         console.log('Done With 1', res);
 
-        ivFittedCurve.parameters = res.parameters;
+        ivMaxPointTotalMatrix[selectedChannelToFit].parameters = res.parameters;
+
         if (selectedModel == '1') {
-            ivFittedCurve.status = 1;
-            $('#resultBody').empty().append("<p>" + '$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + '$$' + "</p>");
+
+            ivMaxPointTotalMatrix[selectedChannelToFit].fitStatus = 1;
+            $('#resultBody').empty().append("<p>" + '$$a = ' + res.parameters[0].toFixed(2) + ', b = ' + res.parameters[1].toFixed(2) + '$$' + "</p>");
 
 
         } else if (selectedModel == '2') {
-            ivFittedCurve.status = 2;
-            $('#resultBody').empty().append("<p>" + '$$a = ' + ivFittedCurve.parameters[0].toFixed(2) + ', b = ' + ivFittedCurve.parameters[1].toFixed(2) + ', c = ' + ivFittedCurve.parameters[2].toFixed(2) + ', d = ' + ivFittedCurve.parameters[3].toFixed(2) + '$$' + "</p>");
+
+            ivMaxPointTotalMatrix[selectedChannelToFit].fitStatus = 2;
+            $('#resultBody').empty().append("<p>" + '$$a = ' + res.parameters[0].toFixed(2) + ', b = ' + res.parameters[1].toFixed(2) + ', c = ' + res.parameters[2].toFixed(2) + ', d = ' + res.parameters[3].toFixed(2) + '$$' + "</p>");
 
         }
 
@@ -512,18 +556,18 @@ function fitCurve() {
         var xEnd = 200;
         for (let i = xStart; i <= xEnd; i += 0.1) {
             if (selectedModel == '1') {
-                fittedYValues.push(lineModel(i, ivFittedCurve.parameters));
+                fittedYValues.push(lineModel(i, res.parameters));
                 fittedCondYValues.push(1);
             } else if (selectedModel == '2') {
-                fittedYValues.push(naCurrentModel(i, ivFittedCurve.parameters));
-                fittedCondYValues.push(conductanceModel(i, ivFittedCurve.parameters));
+                fittedYValues.push(naCurrentModel(i, res.parameters));
+                fittedCondYValues.push(conductanceModel(i, res.parameters));
             }
             fittedXValues.push(i);
         }
 
-        ivFittedCurve.xValues = fittedXValues;
-        ivFittedCurve.yValues = fittedYValues;
-        ivFittedCurve.condValues = fittedCondYValues;
+        ivMaxPointTotalMatrix[selectedChannelToFit].fittedXValues = fittedXValues;
+        ivMaxPointTotalMatrix[selectedChannelToFit].fittedYValues = fittedYValues;
+        ivMaxPointTotalMatrix[selectedChannelToFit].fittedCondYValues = fittedCondYValues;
 
         paintIvCanvas();
         document.getElementById('loadingSpinner').style.display = 'none';
@@ -544,6 +588,17 @@ function paintIvCanvas() {
     ctx.scale(dpi, dpi);
     var height = canvas.getBoundingClientRect().height;
     var width = canvas.getBoundingClientRect().width;
+
+
+    //conct Canvas
+    var condCanvas = document.getElementById("conductanceCanvas");
+    var condCtx = condCanvas.getContext("2d");
+    condCtx.setTransform(1, 0, 0, 1, 0, 0);
+    condCtx.scale(dpi, dpi);
+    condHeight = condCanvas.getBoundingClientRect().height;
+    condWidth = condCanvas.getBoundingClientRect().width;
+    //conc Canvas end
+
 
     ctx.fillStyle = "white";
 
@@ -621,28 +676,87 @@ function paintIvCanvas() {
 
     ctx.stroke();
 
+
+    //conductance grid
+    drawConductanceGrid();
+
     //points
-    for (let averagedPoint of ivMaxPointMatrix) {
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        ctx.arc(getIvXValue(width, averagedPoint.referencePotential, 200, ivX0RelPos), getIvYValue(height, averagedPoint.averageCurrent, 2 * ivMaxAmp, ivY0RelPos), 4, 0, Math.PI * 2, false);
-        ctx.fill();
-    }
-    //fitted curve
-    if (ivFittedCurve.status != 0) {
+    document.getElementById('channelLegend').innerHTML = '';
+    var channelColorArray = ['--bs-green', '--bs-blue', '--bs-red', '--bs-yellow', '--bs-pruple', '--bs-orange', '--bs-cyan', '--bs-pink', '--bs-teal'];
 
-        ctx.beginPath();
-        ctx.setLineDash([]);
-        ctx.strokeStyle = 'green';
-        ctx.lineWidth = '1.5';
-        ctx.moveTo(getIvXValue(width, ivFittedCurve.xValues[0], 200, ivX0RelPos), getIvYValue(height, ivFittedCurve.yValues[0], 2 * ivMaxAmp, ivY0RelPos));
-        for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
-            ctx.lineTo(getIvXValue(width, ivFittedCurve.xValues[i], 200, ivX0RelPos), getIvYValue(height, ivFittedCurve.yValues[i], 2 * ivMaxAmp, ivY0RelPos));
+
+    for (let i = 0; i < ivMaxPointTotalMatrix.length; i++) {
+        ivMaxPointChannelMatrix = ivMaxPointTotalMatrix[i];
+        var element = document.createElement('div');
+        element.classList.add("btn");
+        element.classList.add("btn-sm");
+        element.classList.add("mb-2");
+        element.classList.add("me-2");
+        element.style.setProperty('--channelColor', 'var(' + channelColorArray[i] + ')');
+        var isShown = ivMaxPointChannelMatrix.display;        
+        var displayedString =  isShown ? ' displayed' : '';
+        //element.innerHTML = '<input type="checkbox" class="btn-check channelCheck" id="channelTagButton' + i + '" onchange="toogleChannelDisplay(' + i + ')" autocomplete="off"'+checkedString+'> <label class="btn btn-sm channelTag" for="channelTagButton' + i + '">' + ivMaxPointChannelMatrix.channelName + '</label>'
+        element.innerHTML = '<button class="btn btn-sm channelTag'+ displayedString +'" onclick="toogleChannelDisplay(' + i + ')" >' + ivMaxPointChannelMatrix.channelName + '</button>';
+        document.getElementById('channelLegend').appendChild(element);
+
+        if (isShown) {  
+
+            var computedStyle = getComputedStyle(element);
+            var fillStyleColor = computedStyle.getPropertyValue('--channelColor');
+
+            for (let averagedPoint of ivMaxPointChannelMatrix.values) {
+                ctx.beginPath();
+                ctx.fillStyle = fillStyleColor;
+                ctx.arc(getIvXValue(width, averagedPoint.referencePotential, 200, ivX0RelPos), getIvYValue(height, averagedPoint.averageCurrent, 2 * ivMaxAmp, ivY0RelPos), 4, 0, Math.PI * 2, false);
+                ctx.fill();
+            }
+
+            
+            if(typeof ivMaxPointChannelMatrix.fitStatus !== 'undefined'){
+                //fitted curve
+                
+                ctx.beginPath();
+                ctx.setLineDash([]);
+                ctx.strokeStyle = fillStyleColor;
+                ctx.lineWidth = '1.5';
+                ctx.moveTo(getIvXValue(width, ivMaxPointChannelMatrix.fittedXValues[0], 200, ivX0RelPos), getIvYValue(height, ivMaxPointChannelMatrix.fittedYValues[0], 2 * ivMaxAmp, ivY0RelPos));
+                for (let j = 1; j < ivMaxPointChannelMatrix.fittedXValues.length; j++) {
+                    ctx.lineTo(getIvXValue(width, ivMaxPointChannelMatrix.fittedXValues[j], 200, ivX0RelPos), getIvYValue(height, ivMaxPointChannelMatrix.fittedYValues[j], 2 * ivMaxAmp, ivY0RelPos));
+                }
+                ctx.stroke();
+
+                //conductance curve
+                
+                condCtx.beginPath();
+                condCtx.strokeStyle = fillStyleColor;;
+                condCtx.setLineDash([]);
+                condCtx.lineWidth = '2.5';
+                condCtx.moveTo(getIvXValue(condWidth, ivMaxPointChannelMatrix.fittedXValues[0], 200), getIvYValue(condHeight, ivMaxPointChannelMatrix.fittedCondYValues[0], 1.5, 0.833));
+                for (let j = 1; j < ivMaxPointChannelMatrix.fittedXValues.length; j++) {
+                    condCtx.lineTo(getIvXValue(condWidth, ivMaxPointChannelMatrix.fittedXValues[j], 200), getIvYValue(condHeight, ivMaxPointChannelMatrix.fittedCondYValues[j], 1.5, 0.833));
+                }
+                condCtx.stroke();
+
+            }
+        } 
+    }    
+}
+
+function numberOfNameOccurences(channelName){
+    var n = 0;
+    for (let ivMaxPointChannelMatrix of ivMaxPointTotalMatrix) {
+        if (ivMaxPointChannelMatrix.channelName == channelName) {
+            n++;
         }
-        ctx.stroke();
+    }
+    return n;
+}
 
-        //conductance
-        canvas = document.getElementById("conductanceCanvas");
+function drawConductanceGrid(){
+    //conductance grid
+    let ampStep = Math.round(ivMaxAmp / 6);
+    let voltStep = 10;
+    canvas = document.getElementById("conductanceCanvas");
         ctx = canvas.getContext("2d");
 
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -655,6 +769,7 @@ function paintIvCanvas() {
         ctx.strokeStyle = 'black';
 
         ctx.beginPath();
+        ctx.setLineDash([1.5, 1.5]);
         ctx.lineWidth = '1.5';
         ctx.moveTo(0, getIvYValue(height, 0, 1.5, 0.833));
         ctx.lineTo(width - 30, getIvYValue(height, 0, 1.5, 0.833));
@@ -711,19 +826,6 @@ function paintIvCanvas() {
         ctx.fillText('0.5', width, getIvYValue(height, 0.5, 1.5, 0.833));
         ctx.fillText('0.75', width, getIvYValue(height, 0.75, 1.5, 0.833));
         ctx.fillText('1', width, getIvYValue(height, 1, 1.5, 0.833));
-
-        ctx.beginPath();
-
-
-        ctx.strokeStyle = 'blue';
-        ctx.setLineDash([]);
-        ctx.lineWidth = '2.5';
-        ctx.moveTo(getIvXValue(width, ivFittedCurve.xValues[0], 200), getIvYValue(height, ivFittedCurve.condValues[0], 1.5, 0.833));
-        for (let i = 1; i < ivFittedCurve.xValues.length; i++) {
-            ctx.lineTo(getIvXValue(width, ivFittedCurve.xValues[i], 200), getIvYValue(height, ivFittedCurve.condValues[i], 1.5, 0.833));
-        }
-        ctx.stroke();
-    }
 }
 
 function getIvXValue(width, x, amp, yShiftFactor = 0.5) {
@@ -740,9 +842,7 @@ function calculateMembranePotential(permeabilities) {
     var pNa = permeabilities[0];
     var pK = permeabilities[1];
     var pCa = permeabilities[2];
-    var pCl = permeabilities[3];
-
-    const rtfConstant = 26.71373; //=R*T/F
+    var pCl = permeabilities[3];    
 
     var naEx = getSelectedIon("Na");
     var kEx = getSelectedIon("K");
@@ -775,7 +875,7 @@ function goldmanCurrentEquation(z, P, Vm, Co, Ci,) {
 
 }
 
-function useSimpleCurrentModel(){
+function useSimpleCurrentModel() {
     return ($("input[name='currentSimModeRadio']:checked").val() == "simple");
 }
 
@@ -784,8 +884,6 @@ function calculateCurrentForGivenPotential(potential, permeabilities) {
     var pK = permeabilities[1];
     var pCa = permeabilities[2];
     var pCl = permeabilities[3];
-
-    var rtfConstant = 25.6925775528; //=R*T/F
 
     var naEx = getSelectedIon("Na");
     var kEx = getSelectedIon("K");
@@ -796,7 +894,7 @@ function calculateCurrentForGivenPotential(potential, permeabilities) {
     [naIn, kIn, caIn, clIn] = getInternalConcentrations();
 
     if (useSimpleCurrentModel()) {
-        return pNa * (potential - rtfConstant * Math.log(naEx / naIn)) + pK * (potential - rtfConstant * Math.log(kEx / kIn)) + pCa * (potential - (rtfConstant / 2) * Math.log(caEx / caIn)) + pCl * (potential - rtfConstant * Math.log(clIn / clEx)) + getNoise(4);  // totaler blödsinn muss aus G * (E-Em) berechnet werden
+        return pNa * (potential - calculateMembranePotential([1,0,0,0])) + pK * (potential - calculateMembranePotential([0,1,0,0])) + pCa * (potential - calculateMembranePotential([0,0,1,0])) + pCl * (potential - calculateMembranePotential([0,0,0,1])) + getNoise(4);  
     } else {
         var INa = goldmanCurrentEquation(1, pNa, potential, naEx, naIn);
         var IK = goldmanCurrentEquation(1, pK, potential, kEx, kIn);
@@ -805,7 +903,6 @@ function calculateCurrentForGivenPotential(potential, permeabilities) {
 
         return (INa + IK + ICl + ICa) + getNoise(4);
     }
-
 }
 
 function recordPassive() {
@@ -820,7 +917,6 @@ function recordPassive() {
     var noise = getNoise(0.5);
     var potential = juctionPotential + offsetPotential + noise + membranePotential;
     lastPotential = potential;
-
 
     var current = calculateCurrentForGivenPotential(potential, permeabilities);
 
@@ -964,15 +1060,16 @@ function getPermeabilities(potential, timeAtPotential) {
     var selectedChannel = $("#selectedChannel").val();
     switch (selectedChannel) {
         case '1': //daueroffen für K+
-            if(useSimpleCurrentModel()){
+            if (useSimpleCurrentModel()) {
                 return [0, 4, 0, 0];
-            }else {
+            } else {
                 return [0, 0.03, 0, 0];
             }
             break;
         case '2'://kir
             var slope = 4;
-            var vhalf = -25;
+            //var vhalf = -25;
+            var vhalf = calculateMembranePotential([0,1,0,0]) + 60; //Triebkraftabhängigkeit
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
             var a = 0.86403262;
             var b = 0;
@@ -982,7 +1079,7 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance *= 0.0089;
             }
             return [0, conductance, 0, 0];
@@ -991,7 +1088,7 @@ function getPermeabilities(potential, timeAtPotential) {
             var slope = -4;
             var vhalf = -50;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance *= 0.0089;
             }
             return [0, conductance, 0, 0];
@@ -1008,7 +1105,7 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance *= 0.0089;
             }
             return [0, conductance, 0, 0];
@@ -1017,7 +1114,7 @@ function getPermeabilities(potential, timeAtPotential) {
             var slope = -6;
             var vhalf = -45;
             var conductance = 4 * (1 - (1 / (1 + Math.exp((potential - vhalf) / (-1 * slope)))));
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance *= 0.00416;
             }
             return [conductance, 0, 0, 0];
@@ -1034,7 +1131,7 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance *= 0.0043;
             }
             return [conductance, 0, 0, 0];
@@ -1051,29 +1148,29 @@ function getPermeabilities(potential, timeAtPotential) {
                 var correction = (1 / a) * (1 - 1 / (1 + Math.exp((timeAtPotential - b) / (c)))) * Math.exp((-timeAtPotential + b) / (d));
                 conductance *= correction;
             }
-            if(! useSimpleCurrentModel()){
+            if (!useSimpleCurrentModel()) {
                 conductance /= 2.5;
             }
-            return [0, 0, conductance, 0];            
+            return [0, 0, conductance, 0];
             break;
         case '6': //daueroffen Cl-
-            if(useSimpleCurrentModel()){
+            if (useSimpleCurrentModel()) {
                 return [0, 0, 0, 3];
-            }else {
+            } else {
                 return [0, 0, 0, 0.038];
-            } 
+            }
             break;
         case '5':  //daueroffen für Na+
-            if(useSimpleCurrentModel()){
+            if (useSimpleCurrentModel()) {
                 return [2, 0, 0, 0];
-            }else {
+            } else {
                 return [0.0077, 0, 0, 0];
-            }            
+            }
             break;
         case '10':  //daueroffen für Na+ K+            
-            if(useSimpleCurrentModel()){
+            if (useSimpleCurrentModel()) {
                 return [1.5, 1, 0, 0];
-            }else {
+            } else {
                 return [0.00463, 0.003, 0, 0];
             }
             break;
@@ -1270,7 +1367,6 @@ function calculateJunctionPotential(extracellularConcentrations) {
     var pipetteConcentrations = [0, 3000, 0, 3000];
     var valencies = [1, 1, 2, -1];
     var mobilities = [0.682, 1, 0.81, 1.0388];
-    var rtfConstant = 61.5;
 
     var sum1 = 0;
     var sum2 = 0;
@@ -1319,8 +1415,8 @@ function resizeCanvas() {
 
     paintMainCanvas();
 
-    if (typeof ivMaxPointMatrix !== 'undefined') {
-        if (ivMaxPointMatrix.length > 0) {
+    if (typeof ivMaxPointTotalMatrix !== 'undefined') {
+        if (ivMaxPointTotalMatrix.length > 0) {
             paintIvCanvas();
         }
     }
@@ -1350,4 +1446,9 @@ function updateOutputFields(potential, current) {
 
 function lineModel(x, p) {
     return (p[0] * x + p[1]);
+}
+
+function toogleChannelDisplay(i){
+    ivMaxPointTotalMatrix[i].display = !ivMaxPointTotalMatrix[i].display;
+    paintIvCanvas();
 }

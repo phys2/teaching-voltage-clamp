@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
-:root {
+ :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
   --bs-purple: #6f42c1;
@@ -11641,5 +11641,22 @@ fieldset:disabled .btn {
 
 .readOutText {
   font-size: 0.75rem;
+}
+
+.channelTag.displayed {
+
+  background-color: var(--channelColor);
+  color:white;
+
+}
+
+.channelTag {
+  border-color: var(--channelColor);
+  color: var(--channelColor);
+}
+
+.channelTag:hover {
+  background-color: var(--channelColor);
+  color: white;
 }
 /*# sourceMappingURL=style.css.map */
