@@ -1,17 +1,18 @@
-/*Copyright (C) 2021 Pierre Kreins  
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+/**
+* @preserve Copyright (C) 2021 Pierre Kreins  
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+*/
 
 const deltaT = 20; //20
 
@@ -458,11 +459,13 @@ function importIvData() {
     var ivMaxPointChannelMatrix = new Object();
     channelName =$("#selectedChannel option:selected").text();
     var occ = numberOfNameOccurences(channelName);
+    ivMaxPointChannelMatrix.channelName = channelName;
     if (occ > 0) {
         occ++;
-        channelName = channelName + ' (' + occ.toString() + ')';
+        ivMaxPointChannelMatrix.channelIndex = occ;
+        channelName += ' (' + ivMaxPointChannelMatrix.channelIndex.toString() + ')';        
     }
-    ivMaxPointChannelMatrix.channelName = channelName;
+    
     ivMaxPointChannelMatrix.display = true;
     ivMaxPointChannelMatrix.values = new Array();
 
@@ -484,7 +487,7 @@ function importIvData() {
     $('#eraseIvButton').removeAttr('disabled');
 
     
-    $('#selectedChannelToFit').append($('<option>', {
+        $('#selectedChannelToFit').append($('<option>', {
         value: ivMaxPointTotalMatrix.length-1,
         text: channelName
     }));
@@ -695,8 +698,11 @@ function paintIvCanvas() {
         element.style.setProperty('--channelColor', 'var(' + channelColorArray[i] + ')');
         var isShown = ivMaxPointChannelMatrix.display;        
         var displayedString =  isShown ? ' displayed' : '';
-        //element.innerHTML = '<input type="checkbox" class="btn-check channelCheck" id="channelTagButton' + i + '" onchange="toogleChannelDisplay(' + i + ')" autocomplete="off"'+checkedString+'> <label class="btn btn-sm channelTag" for="channelTagButton' + i + '">' + ivMaxPointChannelMatrix.channelName + '</label>'
-        element.innerHTML = '<button class="btn btn-sm channelTag'+ displayedString +'" onclick="toogleChannelDisplay(' + i + ')" >' + ivMaxPointChannelMatrix.channelName + '</button>';
+        var channelName = ivMaxPointChannelMatrix.channelName;
+        if(typeof ivMaxPointChannelMatrix.channelIndex !== 'undefined'){
+            channelName += ' (' + ivMaxPointChannelMatrix.channelIndex.toString() + ')';
+        }
+        element.innerHTML = '<button class="btn btn-sm channelTag'+ displayedString +'" onclick="toogleChannelDisplay(' + i + ')" >' + channelName + '</button>';
         document.getElementById('channelLegend').appendChild(element);
 
         if (isShown) {  
@@ -922,7 +928,7 @@ function recordPassive() {
 
     updateOutputFields(potential, current);
 
-    if (voltageClampCounter == (60000 / deltaT)) {
+    if (voltageClampCounter == (30000 / deltaT)) {
         //stop
         clearInterval(passiveTimer);
         patchStatus = 6;
@@ -952,7 +958,7 @@ function recordVoltagClamp() {
     updateOutputFields(clampPotential, current);
 
 
-    if (voltageClampCounter == (60000 / deltaT)) {
+    if (voltageClampCounter == (30000 / deltaT)) {
         //stop
         clearInterval(voltageClampTimer);
         patchStatus = 7;
@@ -987,7 +993,7 @@ function recordIvCurve() {
 
     ivDataMatrix[ivCurveCounter] = [clampPotential, current];
 
-    if (ivCurveCounter == (60000 / deltaT)) {
+    if (ivCurveCounter == (30000 / deltaT)) {
         //stop
         clearInterval(ivCurveTimer);
         patchStatus = 8;
@@ -1006,8 +1012,8 @@ function getClampPotential(time) {
     var V_mem = parseInt($('#V_mem').val());
     var pulseVoltageStart = parseInt($('#v_0Input').val());
     var pulseVoltageStep = parseInt($('#deltaVInput').val());
-    var deltaTimeVmem = 3.21;
-    var deltaTimePulse = 2.14;
+    var deltaTimeVmem = 1.50;
+    var deltaTimePulse = 1.1;
     var deltaTimeBoth = deltaTimeVmem + deltaTimePulse;
     for (let i = 0; i < 11; i++) {
         if (time < (i * (deltaTimeBoth) + deltaTimeVmem)) {
@@ -1042,7 +1048,7 @@ function updateWholeCellReadout() {
     updateOutputFields(potential, current);
 
 
-    if (bathTimerCounter == (60000 / deltaT)) {
+    if (bathTimerCounter == (30000 / deltaT)) {
         bathTimerCounter = 0;
         canvasPointsMatrix.length = 0;
 
@@ -1197,7 +1203,7 @@ function updateBathReadout() {
     var current = -1 * potential / pipetteResistance;
     updateOutputFields(potential, current);
 
-    if (bathTimerCounter == (60000 / deltaT)) {
+    if (bathTimerCounter == (30000 / deltaT)) {
 
         bathTimerCounter = 0;
         canvasPointsMatrix.length = 0;
@@ -1239,7 +1245,7 @@ function drawRecord(canvasName, halfAmplitude, offset, color, a) { // a  = 1 if 
     var time = canvasPointsMatrix[0][0];
     var value = canvasPointsMatrix[0][a];
 
-    var xPosition = getRecordXValue(time, 60, width);
+    var xPosition = getRecordXValue(time, 30, width);
     var yPosition = getRecordYValue(value, halfAmplitude, offset, height, topMargin);
 
     ctx.beginPath();
@@ -1249,7 +1255,7 @@ function drawRecord(canvasName, halfAmplitude, offset, color, a) { // a  = 1 if 
         time = canvasPointsMatrix[i][0];
         value = canvasPointsMatrix[i][a];
 
-        xPosition = getRecordXValue(time, 60, width);
+        xPosition = getRecordXValue(time, 30, width);
         yPosition = getRecordYValue(value, halfAmplitude, offset, height, topMargin);
         ctx.lineTo(xPosition, yPosition);
     }
@@ -1319,7 +1325,7 @@ function drawGrid(canvasName, halfAmplitude, unit, offset) {
             ctx.font = "13px Arial";
             ctx.textBaseline = 'top';
             ctx.textAlign = "right";
-            ctx.fillText("60 s", width - 3, yLine + 7);
+            ctx.fillText("30 s", width - 3, yLine + 7);
 
         } else {
             //draw dotted horizontal line
@@ -1423,7 +1429,7 @@ function resizeCanvas() {
 }
 
 function timerCounterToTime(a) {
-    return (a / (60000 / deltaT)) * 60;
+    return (a / (30000 / deltaT)) * 30;
 }
 
 function naCurrentModel(x, p) {
