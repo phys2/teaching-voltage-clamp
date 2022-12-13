@@ -685,7 +685,7 @@ function paintIvCanvas() {
 
     //points
     document.getElementById('channelLegend').innerHTML = '';
-    var channelColorArray = ['--bs-green', '--bs-blue', '--bs-red', '--bs-yellow', '--bs-pruple', '--bs-orange', '--bs-cyan', '--bs-pink', '--bs-teal'];
+    var channelColorArray = ['--bs-green', '--bs-blue', '--bs-red', '--bs-yellow', '--bs-purple', '--bs-orange', '--bs-cyan', '--bs-pink', '--bs-teal'];
 
 
     for (let i = 0; i < ivMaxPointTotalMatrix.length; i++) {
@@ -1175,7 +1175,7 @@ function getPermeabilities(potential, timeAtPotential) {
             break;
         case '10':  //daueroffen für Na+ K+            
             if (useSimpleCurrentModel()) {
-                return [1.5, 1, 0, 0];
+                return [1.5, 0.8, 0, 0];
             } else {
                 return [0.00463, 0.003, 0, 0];
             }
